@@ -1,0 +1,41 @@
+<div class="header" [class.open]="open">
+  <div class="title">{{ ticket.title }}</div>
+  <div class="date">{{ ticket.date | date }}</div>
+  <div class="toggle" (click)="toggle()">
+    <i *ngIf="!open" class="fas fa-angle-down fa-2x"></i>
+    <i *ngIf="open" class="fas fa-angle-up fa-2x"></i>
+  </div>
+</div>
+<div *ngIf="open" class="summary">
+  <div class="question">
+    <div>Vraag:</div>
+    <div>{{ ticket.question }}</div>
+  </div>
+  <div class="status">
+    <div>Status:</div>
+    <div>{{ getStatusLabel(ticket.status) }}</div>
+  </div>
+  <div class="device">
+    <div>Apparaat:</div>
+    <div>{{ ticket.device }}</div>
+  </div>
+</div>
+<div *ngIf="open && ticket.communication" class="communication">
+  <div *ngFor="let reaction of ticket.communication" class="reaction"
+       [class.user]="reaction.type === Type.USER"
+       [class.admin]="reaction.type === Type.ADMIN">
+    <div class="date">{{reaction.date | date:'yyyy-MM-dd HH:mm' }}</div>
+    <div class="content">{{ reaction.content }}</div>
+  </div>
+</div>
+
+<div class="react" *ngIf="openEditor">
+  <textarea></textarea>
+</div>
+<div *ngIf="open && ticket.status !== Status.DONE" class="footer">
+  <div *ngIf="openEditor" (click)="openEditor=!openEditor">Annuleer</div>
+  <div *ngIf="openEditor" class="submit" (click)="sendReaction()">Verzenden</div>
+  <div *ngIf="!openEditor" (click)="addReaction()">Reageer</div>
+  <div *ngIf="!openEditor" class="close" (click)="closeTicket()">Vraag verholpen</div>
+</div>
+

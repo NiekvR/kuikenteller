@@ -1,0 +1,9 @@
+{
+  "name": "@ternwebdesign/compress-image",
+  "version": "0.1.0",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "exifreader": "^2.12.0"
+  }
+}

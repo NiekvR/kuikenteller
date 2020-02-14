@@ -1,0 +1,151 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  margin: 30px;
+  border: 1px black solid;
+  border-radius: 5px;
+  font-family: 'Raleway', sans-serif;
+
+  &.new {
+    border-left: 10px #55b6d6 solid;
+  }
+
+  &.in-progress {
+    border-left: 10px #bed639 solid;
+  }
+
+  &.waiting {
+    border-left: 10px #fec10d solid;
+  }
+
+  &.done {
+    border-left: 10px #76b542 solid;
+  }
+
+  .header {
+    display: flex;
+    padding: 5px 5px 0 5px;
+
+    &.open {
+      padding-bottom: 10px;
+    }
+
+    &:not(.open) {
+      .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .title {
+      flex: 1;
+      padding-top: 5px;
+    }
+
+    .date {
+      padding-top: 5px;
+    }
+
+    .toggle {
+      padding: 0 10px;
+      cursor: pointer;
+
+      &:hover {
+        color: #55b6d6;
+      }
+    }
+  }
+
+  .summary {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px black solid;
+    padding: 10px 0;
+    margin: 0 5px;
+
+    div {
+      display: flex;
+
+      div:first-child {
+        flex: 0 0 75px;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .communication {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px black solid;
+    padding: 10px 0;
+    margin: 0 5px;
+
+    .reaction {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+      background-color: #F5F5F5;
+      border-radius: 5px;
+      padding: 5px;
+
+      .date {
+        font-style: italic;
+      }
+
+      &.user {
+        margin-right: 10px;
+      }
+
+      &.admin {
+        margin-left: 10px;
+        align-items: flex-end;
+      }
+    }
+  }
+
+  .react {
+    flex: 0 0 50px;
+    border-top: 1px solid black;
+
+    textarea {
+      width: calc(100% - 5px);
+      height: 40px;
+      resize: none;
+      border: none;
+      outline: none;
+    }
+  }
+
+  .footer {
+    display: flex;
+    border-radius: 5px 5px 0 0;
+
+    div {
+      flex: 50%;
+      text-align: center;
+      padding: 5px;
+      background-color: #F5F5F5;
+      cursor: pointer;
+      border: 1px solid black;
+
+      &:hover {
+        background-color: lightgray;
+      }
+
+      &.submit {
+        background-color: #55b6d6;
+        color: white;
+
+        &:hover {
+          background-color: lightgray;
+          color: black;
+        }
+      }
+
+      &:last-child {
+        border-radius: 0 0 5px 0;
+      }
+    }
+  }
+}

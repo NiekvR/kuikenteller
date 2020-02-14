@@ -1,0 +1,149 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$kuikenApp-primary: mat-palette($mat-amber, 500);
+$kuikenApp-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$kuikenApp-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$kuikenApp-theme: mat-light-theme($kuikenApp-primary, $kuikenApp-accent, $kuikenApp-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($kuikenApp-theme);
+
+/* You can add global styles to this file, and also import other style files */
+@import "~ng-pick-datetime/assets/style/picker.min.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.title-center {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+$spaceamounts: (0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 75, 100);
+$sides: (top, bottom, left, right);
+
+@each $space in $spaceamounts {
+
+  .m-#{$space} {
+    margin: #{$space}px !important;
+  }
+
+  .p-#{$space} {
+    padding: #{$space}px !important;
+  }
+  @each $side in $sides {
+    .m-#{str-slice($side, 0, 1)}-#{$space} {
+      margin-#{$side}: #{$space}px !important;
+    }
+
+    .p-#{str-slice($side, 0, 1)}-#{$space} {
+      padding-#{$side}: #{$space}px !important;
+    }
+  }
+}
+
+$widths: (5, 10, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100);
+
+@each $width in $widths {
+  .w-#{$width} {
+    width: $width * 1% !important;
+  }
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-grow {
+  flex: 1 1 0;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.mh-100 {
+  max-height: 100%;
+}
+
+.mw-100 {
+  max-width: 100%;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+owl-date-time-container {
+  .owl-dt-calendar-table .owl-dt-calendar-cell-selected {
+    background-color: #fec10d;
+  }
+
+  .owl-dt-container-buttons {
+    color: black;
+
+    button:hover {
+
+      .owl-dt-control-button-content {
+        background-color: #fec10d;
+      }
+    }
+  }
+}
+
+.mat-tab-body-wrapper {
+  height: 100%;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}

@@ -10,14 +10,28 @@
     "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es5",
     "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "tern-support": [
+        "dist/tern-support"
+      ],
+      "tern-support/*": [
+        "dist/tern-support/*"
+      ],
+      "tern-compress-image": [
+        "dist/tern-compress-image"
+      ],
+      "tern-compress-image/*": [
+        "dist/tern-compress-image/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

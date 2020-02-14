@@ -1,0 +1,13 @@
+<div class="background-container">
+  <div *ngIf="!openDetails" class="logo">
+    <img src="assets/logo/kuikenTeller-logo_512x512.png" alt="kuikenteller logo" [class.visible]="!animate"/>
+    <img src="assets/JVDWE-logo.png" class="overlay-img" alt="jaar van de wilde eend logo" [class.visible]="animate"/>
+    <h1>KuikenTeller</h1>
+  </div>
+  <div class="container flex flex-column" *ngIf="openDetails">
+    <div *ngIf="!!promptEvent" class="install p-5" (click)="installPwa()">
+      <span>Installeer de applicatie op je telefoon.</span>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

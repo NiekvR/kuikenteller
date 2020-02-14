@@ -1,0 +1,244 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <button mat-icon-button color="primary" (click)="next(currentStep - 1)">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="title-center">{{ step[currentStep].title }}</span>
+    <button mat-button color="primary" class="p-0" (click)="next(currentStep + 1)" [disabled]="isDisabled()" aria-label="volgende">
+      {{ nextStep() }}
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<div class="container">
+  <form class="example-form h-100" [formGroup]="sightingForm">
+    <ng-container *ngIf="step[1].active">
+      <mat-form-field>
+        <mat-select placeholder="Soort" formControlName="species" required>
+          <mat-select-trigger>
+            <span *ngIf="sightingForm.controls['species']?.value">
+              {{getSpecies(sightingForm.controls['species'].value).name}}  - <i>{{ getSpecies(sightingForm.controls['species'].value).latin }}</i>
+            </span>
+          </mat-select-trigger>
+          <mat-option *ngFor="let sp of species" [value]="sp.value">{{ sp.name }} - <i>{{ sp.latin }}</i></mat-option>
+        </mat-select>
+        <button matSuffix mat-icon-button (click)="hide[7] = ! hide[7]" color="{{ !hide[7] ? 'primary' : 'secondary'}}" aria-label="info">
+          <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[7]">Selecteer hier het soort kuiken dat u heeft gezien.</mat-hint>
+      </mat-form-field>
+      <mat-form-field class="date-picker">
+        <input matInput [owlDateTime]="dt2" [owlDateTimeTrigger]="dt2" placeholder="Datum" formControlName="sigthingDate" [max]="maxDate" [min]="minDate" required>
+        <owl-date-time #dt2></owl-date-time>
+        <button matSuffix mat-icon-button (click)="hide[0] = ! hide[0]" color="{{ !hide[0] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[0]">Wanneer heeft u de eendenkuikens gezien?</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <input type="number" matInput placeholder="Aantal kuikens"
+        formControlName="numberOfChicks" [errorStateMatcher]="matcher" required>
+        <button matSuffix mat-icon-button (click)="hide[1] = ! hide[1]" color="{{ !hide[1] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[1]">Hoeveel kuikens telde u bij de moeder? Meld één gezin per waarneming.</mat-hint>
+        <mat-error *ngIf="numberFormControl.hasError('pattern') && !numberFormControl.hasError('required')">
+          U kunt hier alleen een nummer invoeren.
+        </mat-error>
+        <mat-error *ngIf="numberFormControl.hasError('required')">
+          Aantal kuikens is <strong>verplicht</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field *ngIf="uploaded.length > 0">
+        <mat-select placeholder="Gezin eerder gemeld?" formControlName="gezinEerderGemeld">
+          <mat-option [value]="null">-- Nee --</mat-option>
+          <mat-option *ngFor="let sighting of uploaded" [value]="sighting.waarnemingId">{{sighting.sigthingDate | date: 'dd MMMM yyyy HH:mm'}} - {{sighting.numberOfChicks}} kuikens</mat-option>
+        </mat-select>
+        <button matSuffix mat-icon-button (click)="hide[2] = ! hide[2]" color="{{ !hide[2] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[2]">Heeft u dit eendengezin eerder gezien en gemeld?</mat-hint>
+      </mat-form-field>
+      <div class="flex space-between m-b-20 p-l-15 p-r-15" *ngIf="!!sightingForm.controls['gezinEerderGemeld'].value">
+        <label>Hoe zeker bent u dat dit hetzelfde gezin is?”: </label>
+        <mat-radio-group formControlName="certaintyRecapture" color="primary" class="landlocked-radio" [labelPosition]="'before'">
+          <mat-radio-button value="cer">Zeker</mat-radio-button>
+          <mat-radio-button value="acer">Vrij zeker</mat-radio-button>
+          <mat-radio-button value="uns">Onzeker</mat-radio-button>
+        </mat-radio-group>
+      </div>
+<!--      <mat-form-field>-->
+<!--        <mat-select placeholder="Habitat" formControlName="habitat">-->
+<!--          <mat-option value="bsg">Bebouwd (stedelijk) gebied</mat-option>-->
+<!--          <mat-option value="ag">Agrarisch gebied</mat-option>-->
+<!--          <mat-option value="nb">Natuurgebied</mat-option>-->
+<!--        </mat-select>-->
+<!--        <button matSuffix mat-icon-button (click)="hide[3] = ! hide[3]" color="{{ !hide[3] ? 'primary' : 'secondary'}}">-->
+<!--            <mat-icon>info</mat-icon>-->
+<!--        </button>-->
+<!--        <mat-hint *ngIf="!hide[3]">Selecteer hier de omgeving waarin het eendengezin verblijft.</mat-hint>-->
+<!--      </mat-form-field>-->
+
+    </ng-container>
+    <ng-container *ngIf="step[2].active">
+      <mat-grid-list cols="2" rowHeight="130px">
+        <mat-grid-tile [class.active]="age === x" [class.disabled]="sighting?.uploaded" *ngFor="let dummy of ' '.repeat(8).split(''), let x = index" (click)="setAge(x)">
+          <div class="grid-tile-content">
+            <span>{{ x === 7 ? '>' + x + ' weken' : x + '-' + (x + 1) + ' weken'}}</span>
+            <img [src]="'assets/ages/mallard/' + x + '.png'" [alt]="'leeftijds categorie eend ' + x"/>
+          </div>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </ng-container>
+    <ng-container *ngIf="step[3].active">
+      <h3 class="m-t-0 p-l-15 p-r-15">Habitat</h3>
+      <div class="flex space-between m-b-20 p-l-15 p-r-15">
+        <label>Bevonden de vogels zich op: </label>
+        <mat-radio-group formControlName="surface" color="primary" class="landlocked-radio" [labelPosition]="'before'">
+          <mat-radio-button value="land">Land</mat-radio-button>
+          <mat-radio-button value="water">Water</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <mat-form-field>
+        <mat-select placeholder="Details oever" formControlName="shore">
+          <mat-option value="nno">Natuurlijk, kaal</mat-option>
+          <mat-option value="nlv">Natuurlijk, lage vegetatie</mat-option>
+          <mat-option value="nhv">Natuurlijk, hoge vegetatie</mat-option>
+          <mat-option value="emb">Beschoeid / kade</mat-option>
+          <mat-option value="oth">Anders</mat-option>
+        </mat-select>
+        <button matSuffix mat-icon-button (click)="hide[5] = ! hide[5]" color="{{ !hide[5] ? 'primary' : 'secondary'}}" aria-label="info">
+          <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[5]">Selecteer hier het type oever beschikbaar voor de kuikens</mat-hint>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select placeholder="Details water" formControlName="water">
+          <mat-option value="cle">Helder</mat-option>
+          <mat-option value="tur">Troebel</mat-option>
+          <mat-option value="wee">Kroos</mat-option>
+          <mat-option value="oth">Anders</mat-option>
+        </mat-select>
+        <button matSuffix mat-icon-button (click)="hide[6] = ! hide[6]" color="{{ !hide[6] ? 'primary' : 'secondary'}}" aria-label="info">
+          <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[6]">Geef hier aan wat de waterkwaliteit was van het water waar de kuikens in zwommen</mat-hint>
+      </mat-form-field>
+    </ng-container>
+    <ng-container *ngIf="step[4].active">
+      <h3 class="m-b-0 p-l-15 p-r-15">Sterfte</h3>
+      <div class="flex space-between p-l-15 p-r-15">
+        <label>Sterfte gezien tijdens deze waarneming: </label>
+        <mat-slide-toggle class="example-margin" [checked]="deaths" (change)="toggleDeaths()" color="primary">
+        </mat-slide-toggle>
+      </div>
+      <div *ngIf="deaths">
+        <mat-form-field>
+          <input type="number" matInput placeholder="Aantal kuikens"
+                 formControlName="numberOfDeaths">
+          <button matSuffix mat-icon-button (click)="hide[7] = ! hide[7]" color="{{ !hide[7] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+          </button>
+          <mat-hint *ngIf="!hide[7]">Hoeveel kuikens zijn er overleden?</mat-hint>
+        </mat-form-field>
+
+        <div class="flex space-between m-b-20 p-l-15 p-r-15">
+          <label>Oorzaak: </label>
+          <mat-radio-group formControlName="deathReason" color="primary" class="landlocked-radio" [labelPosition]="'before'">
+            <mat-radio-button value="pre">Predatie</mat-radio-button>
+            <mat-radio-button value="agg">Agressie</mat-radio-button>
+            <mat-radio-button value="hac">Menselijke handelen</mat-radio-button>
+            <mat-radio-button value="oth">Anders, namelijk...</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <mat-form-field *ngIf="sightingForm.controls['deathReason'].value === 'pre'">
+          <mat-select placeholder="Predatie" formControlName="predation">
+            <mat-option value="bon">Vogel onbekend</mat-option>
+            <mat-option value="bre">Blauwe Reiger</mat-option>
+            <mat-option value="zkr">Zwarte Kraai</mat-option>
+            <mat-option value="bui">Buizerd</mat-option>
+            <mat-option value="zon">Zoogdier onbekend</mat-option>
+            <mat-option value="hon">Hond</mat-option>
+            <mat-option value="kat">Kat</mat-option>
+            <mat-option value="rat">Rat</mat-option>
+            <mat-option value="von">Vis onbekend</mat-option>
+            <mat-option value="sno">Snoek</mat-option>
+            <mat-option value="kar">Karper</mat-option>
+          </mat-select>
+          <button matSuffix mat-icon-button (click)="hide[8] = ! hide[8]" color="{{ !hide[8] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+          </button>
+          <mat-hint *ngIf="!hide[8]">Selecteer hier de soort die de kuikens heeft gevangen</mat-hint>
+        </mat-form-field>
+        <mat-form-field  *ngIf="sightingForm.controls['deathReason'].value === 'agg'">
+          <mat-select placeholder="Aggressie" formControlName="aggression">
+            <mat-option value="nijl">Nijlgans</mat-option>
+            <mat-option value="mee">Meerkoet</mat-option>
+            <mat-option value="aot">Anders</mat-option>
+          </mat-select>
+          <button matSuffix mat-icon-button (click)="hide[9] = ! hide[9]" color="{{ !hide[9] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+          </button>
+          <mat-hint *ngIf="!hide[9]">Selecteer hier de soort die de agressie heeft vertoont</mat-hint>
+        </mat-form-field>
+        <mat-form-field  *ngIf="sightingForm.controls['deathReason'].value === 'hac'">
+          <mat-select placeholder="Menselijk handelen" formControlName="humanActivity">
+            <mat-option value="ver">Verkeer</mat-option>
+            <mat-option value="maa">Maaien</mat-option>
+            <mat-option value="hot">Anders</mat-option>
+          </mat-select>
+          <button matSuffix mat-icon-button (click)="hide[9] = ! hide[9]" color="{{ !hide[9] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+          </button>
+          <mat-hint *ngIf="!hide[9]">Selecteer hier het type menselijk activiteit wat de doodsoorzaak is van de kuikens</mat-hint>
+        </mat-form-field>
+        <mat-form-field  *ngIf="showOtherDeathReason()">
+          <input type="text" matInput placeholder=""
+                 formControlName="deathReasonOther">
+          <button matSuffix mat-icon-button (click)="hide[10] = ! hide[10]" color="{{ !hide[10] ? 'primary' : 'secondary'}}" aria-label="info">
+            <mat-icon>info</mat-icon>
+          </button>
+          <mat-hint *ngIf="!hide[10]">Geef hier de doodsoorzaak weer</mat-hint>
+        </mat-form-field>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="step[5].active">
+      <h3 class="p-l-15 p-r-15">Overig</h3>
+      <div class="flex space-between m-b-20 p-l-15 p-r-15">
+        <label>Wordt op deze locatie regelmatig brood gevoerd: </label>
+        <mat-radio-group formControlName="extraFeedings" color="primary" class="landlocked-radio" [labelPosition]="'before'">
+          <mat-radio-button value="unk">Weet ik niet</mat-radio-button>
+          <mat-radio-button value="yes">Ja</mat-radio-button>
+          <mat-radio-button value="no">Nee</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <mat-form-field>
+        <textarea matInput placeholder="Opmerkingen" formControlName="remarks"></textarea>
+        <button matSuffix mat-icon-button (click)="hide[4] = ! hide[4]" color="{{ !hide[4] ? 'primary' : 'secondary'}}" aria-label="info">
+          <mat-icon>info</mat-icon>
+        </button>
+        <mat-hint *ngIf="!hide[4]">Hier kunt u extra informatie geven over uw waarneming.</mat-hint>
+      </mat-form-field>
+
+    </ng-container>
+    <ng-container *ngIf="step[6].active">
+      <agm-map [latitude]="map.position.lat" [longitude]="map.position.lng" [zoom]="map.zoom" mapTypeControl="true" (mapClick)="mapClicked($event)">
+        <agm-marker [latitude]="marker.lat" [longitude]="marker.lng"></agm-marker>
+      </agm-map>
+    </ng-container>
+    <ng-container *ngIf="step[7].active">
+      <div class="flex justify-content-center">
+        Upload of maak hier een foto van uw waarneming.
+      </div>
+      <div class="flex justify-content-center align-items-center h-100 overflow-hidden">
+        <input hidden type="file" name="image" id="image" (change)="previewImage($event)" accept="image/*"/>
+        <button *ngIf="!base64textString" mat-fab color="primary" [disabled]="sighting?.uploaded" (click)="openImageSelector()" aria-label="voeg afbeelding toe">
+          <mat-icon>photo_camera</mat-icon>
+        </button>
+        <img *ngIf="base64textString" [src]="base64textString | safe" alt="Geuploade afbeelding" class="mh-100 mw-100" (click)="openImageSelector()">
+      </div>
+    </ng-container>
+  </form>
+</div>

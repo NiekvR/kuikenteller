@@ -1,0 +1,63 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+
+  .tickets {
+    flex: 1 1 auto;
+    overflow: scroll;
+  }
+
+  .no-user {
+    padding: 15px;
+  }
+
+  .link {
+    padding: 10px;
+    text-align: center;
+    text-decoration: underline;
+    color: darkgray;
+    cursor: pointer;
+  }
+
+  .legenda {
+    display: flex;
+    padding: 0 30px;
+    flex-wrap: wrap;
+
+    .item {
+      flex: 0 0 50%;
+      display: flex;
+      align-items: center;
+
+      .color {
+        width: 16px;
+        height: 16px;
+        border: 1px black solid;
+        border-radius: 3px;
+        margin-right: 10px;
+
+        &.new {
+          background-color: #55b6d6;
+        }
+
+        &.in-progress {
+          background-color: #bed639;
+        }
+
+        &.waiting {
+          background-color: #fec10d;
+        }
+
+        &.done {
+          background-color: #76b542;
+        }
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
+

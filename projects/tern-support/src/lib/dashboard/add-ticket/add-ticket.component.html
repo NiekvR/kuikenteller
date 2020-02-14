@@ -1,0 +1,57 @@
+<div class="ticket-form" [@openClose]="animated ? open ? 'open' : 'closed' : 'open'">
+  <div class="progress-bar">
+    <div [style.width]="getProgress()"></div>
+  </div>
+  <form class="example-form h-100" [formGroup]="ticketForm" autocomplete="off">
+    <div class="steps" [@step]="step.toString()">
+      <div class="step">
+        <p>Werkt er iets niet? Volg de stappen om het probleem voor ons
+          inzichtelijk te maken en we proberen je zo goed mogelijk te helpen!</p>
+        <p class="warning">Meld hier alleen technische problemen. Voor inhoude- lijke vragen kun je
+          Sovon bereiken via <a href="mailto:info@sovon.nl" target="_blank">info@sovon.nl</a>.</p>
+      </div>
+      <div class="step">
+        <p>Vat je probleem in 1 zin samen:</p>
+        <input #title type="text" name="title" formControlName="title">
+      </div>
+      <div class="step">
+        <p>Verstrek aanvullende informatie. Beschrijf wat je deed, wat je verwachtte en wat er gebeurde:</p>
+        <textarea #content formControlName="question"></textarea>
+      </div>
+      <div class="step">
+        <p class="m-0">Op welk apparaat deed het probleem zich voor:</p>
+        <div class="form-group">
+          <label>Apparaat</label>
+          <input #device type="text" name="device" formControlName="device">
+        </div>
+        <p class="m-0">En op welke browser:</p>
+        <div class="form-group">
+          <label>Browser</label>
+          <select formControlName="browser">
+            <option value="app">App</option>
+            <option value="chrome">Chrome</option>
+            <option value="edge">Edge</option>
+            <option value="firefox">Firefox</option>
+            <option value="safari">Safari</option>
+            <option value="opera">Opera</option>
+            <option value="ie">Internet Explorer</option>
+            <option value="android">Android browser</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<div class="toolbar">
+
+  <div class="navigate">
+    <i *ngIf="open" [class.hidden]="step === 1" class="fas fa-angle-left fa-2x" (click)="navigate(-1)"></i>
+    <div *ngIf="this.animated" class="add" (click)="toggle()">
+      <i class="fas fa-plus fa-2x" [class.rotate]="toggleMainButton"></i>
+    </div>
+    <span *ngIf="step > 3" [class.disabled]="!ticketForm.valid" (click)="sendTicket()">Verstuur</span>
+    <i *ngIf="step <= 3 && open" [class.hidden]="step > 3" class="fas fa-angle-right fa-2x" (click)="navigate(1)" [class.disabled]="!canMoveToNextStep()"></i>
+  </div>
+</div>

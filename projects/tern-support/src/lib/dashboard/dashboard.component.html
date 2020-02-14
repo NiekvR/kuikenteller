@@ -1,0 +1,38 @@
+<link crossorigin="anonymous" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+      integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" rel="stylesheet">
+<ng-container *ngIf="!!userId">
+  <tern-add-ticket (refresh)="addTicket($event)" [project]="project" [user]="userId" [animated]="animated"></tern-add-ticket>
+
+  <div (click)="showLegend=!showLegend" *ngIf="!showLegend" class="link">
+    Toon legenda
+  </div>
+
+  <div *ngIf="showLegend" class="legenda">
+    <div class="item">
+      <div class="color new"></div>
+      <p>Nieuw</p>
+    </div>
+    <div class="item">
+      <div class="color in-progress"></div>
+      <p>In behandeling</p>
+    </div>
+    <div class="item">
+      <div class="color waiting"></div>
+      <p>Wacht op uw reactie</p>
+    </div>
+    <div class="item">
+      <div class="color done"></div>
+      <p>Klaar</p>
+    </div>
+  </div>
+
+  <div class="tickets">
+    <tern-ticket *ngFor="let ticket of tickets" [ticket]="ticket"></tern-ticket>
+  </div>
+</ng-container>
+<ng-container *ngIf="!userId">
+  <div class="no-user">
+    Er is geen email van u beschikbaar. Zonder email kunnen we u helaas niet helpen.
+    Vul in de tab "Gebruiker" uw emailadres om alsnog van de support gebruik te kunnen maken.
+  </div>
+</ng-container>

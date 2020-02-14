@@ -1,0 +1,83 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <button mat-icon-button color="primary" (click)="back()" *ngIf="!firstLogin"  aria-label="terug">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="title-center">Instellingen</span>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<div class="container">
+  <mat-tab-group class="h-100" mat-align-tabs="center" animationDuration="0ms" [selectedIndex]="support ? 1 : 0" *ngIf="!conditions">
+    <mat-tab label="Gebruiker">
+      <div class="flex flex-column space-between h-100">
+        <form class="example-form" [formGroup]="preferencesForm">
+          <mat-form-field>
+            <input type="email" matInput placeholder="Email"
+                   formControlName="observerEmail">
+            <button matSuffix mat-icon-button (click)="hide[0] = ! hide[0]" color="{{ !hide[0] ? 'primary' : 'secondary'}}" aria-label="info">
+              <mat-icon>info</mat-icon>
+            </button>
+            <mat-hint *ngIf="!hide[0]">Voer hier uw emailadress in</mat-hint>
+            <mat-error *ngIf="!preferencesForm.controls.observerEmail.valid">
+              U kunt hier alleen een emailadres invoeren
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <input type="text" matInput placeholder="Naam"
+                   formControlName="observerName">
+            <button matSuffix mat-icon-button (click)="hide[1] = ! hide[1]" color="{{ !hide[1] ? 'primary' : 'secondary'}}" aria-label="info">
+              <mat-icon>info</mat-icon>
+            </button>
+            <mat-hint *ngIf="!hide[1]">Voer hier uw naam in</mat-hint>
+          </mat-form-field>
+          <mat-checkbox formControlName="permission" required>Ik ga akkoord met de
+            <button mat-button color="primary" class="p-0" (click)="toggleConditions()">
+              Voorwaarden
+            </button>
+          </mat-checkbox>
+          <mat-error *ngIf="permissionError">
+            Deze applicatie is alleen te gebruiken wanneer u akkoord gaat met de voorwaarden
+          </mat-error>
+          <button mat-raised-button color="primary" class="p-0 m-t-20" (click)="save()">Opslaan</button>
+        </form>
+
+        <div class="flex flex-column align-items-center">
+          <span>Deze applicatie is onderdeel van:</span>
+          <span>
+
+          </span>
+          <a href="http://www.jaarvandewildeeend.nl" target="_blank" rel="noopener"><img src="assets/JVDWE-logo.png"/>Het jaar van de wilde eend</a>
+        </div>
+      </div>
+    </mat-tab>
+    <mat-tab label="Support" *ngIf="!firstLogin">
+      <tern-dashboard [userId]="preferences.observerEmail" [project]="'ekt'" [animated]="false"></tern-dashboard>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div *ngIf="conditions" class="p-15">
+    <h1>Algemene Voorwaarden</h1>
+
+    <p >Bedankt voor uw bijdrage aan dit onderzoek. Om misverstanden te voorkomen willen wij graag duidelijkheid verschaffen
+      over hoe wij de gegevens gebruiken die u hier invoert. Door uw waarneming in te voeren gaat u akkoord met de volgende
+      voorwaarden:</p>
+    <p><strong>Gebruik gegevens waarneming:</strong> u doet met uw waarneming een belangrijke bijdrage aan wetenschappelijk onderzoek.
+      Door uw waarneming in te voeren geeft u ons toestemming om de gegevens van de waarneming – namelijk de datum, locatie,
+      aantal kuikens, kuikenleeftijd en eventuele bijzonderheden – te gebruiken in analyses en publicaties die voortvloeien
+      uit dit onderzoek. Het invoeren van waarnemingen geeft u geen automatisch recht op co-auteurschap, eigendom of gebruiksrecht
+      van andere gegevens verzameld in het kader van dit onderzoek.</p>
+    <p><strong>Gebruik foto:</strong> foto’s geven waardevolle extra informatie over uw waarneming en wij moedigen u aan om een foto
+      te uploaden van de eendenkuikens en hun moeder. Het copyright van deze foto’s blijft bij de fotograaf. Door uw foto te
+      uploaden geeft u uitsluitend toestemming voor het gebruik van uw foto als illustratie op deze invoerpagina. Indien wij uw
+      foto voor andere doeleinden zouden willen gebruiken, zullen wij eerst persoonlijk contact met u opnemen om daarvoor
+      toestemming te vragen.</p>
+    <p><strong>Gebruik persoonlijke gegevens:</strong> uw persoonlijke gegevens worden uitsluitend gebruikt voor persoonlijke
+      communicatie met u, bijvoorbeeld als wij contact met u opnemen voor het gebruik van een foto of voor aanvullende informatie.
+      Uw gegevens worden vertrouwelijk behandeld en niet verstrekt aan derden.</p>
+
+    <a class="link" href="https://www.sovon.nl/node/8250" target="_blank" rel="noopener">https://www.sovon.nl/node/8250</a>
+
+    <button mat-raised-button color="primary" class="p-0 m-t-20" (click)="toggleConditions()"  aria-label="sluit voorwaarden">Sluiten</button>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0;
+
+  mat-toolbar {
+    flex: 0 0 64px;
+  }
+
+  mat-list {
+    overflow: auto;
+  }
+
+  .example-header-image {
+    background-image: url('../../assets/logo-duckling.jpg');
+    background-size: cover;
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .mat-card {
+      height: 175px;
+
+      .button-container {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    background-color: white;
+
+    p {
+      cursor: pointer;
+      color: gold;
+
+      &:hover {
+        color: #ffc106;
+      }
+    }
+  }
+}
