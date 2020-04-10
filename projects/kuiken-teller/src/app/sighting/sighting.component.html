@@ -238,15 +238,16 @@
       </agm-map>
     </ng-container>
     <ng-container *ngIf="step[7].active">
-      <div class="flex justify-content-center">
+      <div *ngIf="!isUploaded()" class="flex justify-content-center">
         Upload of maak hier een foto van uw waarneming.
       </div>
-      <div class="flex justify-content-center align-items-center h-100 overflow-hidden">
+      <div class="flex justify-content-center align-items-center h-100 overflow-hidden flex-column">
         <input hidden type="file" name="image" id="image" (change)="previewImage($event)" accept="image/*"/>
         <button *ngIf="!base64textString" mat-fab color="primary" [disabled]="sighting?.uploaded" (click)="openImageSelector()" aria-label="voeg afbeelding toe">
           <mat-icon>photo_camera</mat-icon>
         </button>
         <img *ngIf="base64textString" [src]="base64textString | safe" alt="Geuploade afbeelding" class="mh-100 mw-100" (click)="openImageSelector()">
+        <p *ngIf="isUploaded()" class="p-15 text-align-center">Uw foto is geconverteerd naar thumbnail om datagebruik te besparen.</p>
       </div>
     </ng-container>
   </form>

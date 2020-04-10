@@ -105,6 +105,7 @@ export class SightingComponent implements OnInit, OnDestroy {
   }
 
   public isDisabled() {
+    console.log('UPL', this.isUploaded());
     return this.isUploaded() ?
       false :
       !this.sightingForm.valid ?
@@ -229,6 +230,10 @@ export class SightingComponent implements OnInit, OnDestroy {
 
   public setPosition(latLngEvent) {
     this.positionSubject.next(latLngEvent);
+  }
+
+  public isUploaded() {
+    return !!this.sighting && this.sighting.uploaded;
   }
 
   private setMapCenter(lat, lng, zoom?) {
@@ -361,10 +366,6 @@ export class SightingComponent implements OnInit, OnDestroy {
       sighting.deathReasonOther : causeofDeath;
 
     return !!causeofDeath && causeofDeath.length > 0 ? causeofDeath : sighting.deathReason;
-  }
-
-  private isUploaded() {
-    return !!this.sighting && this.sighting.uploaded;
   }
 }
 
