@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
-import { Preferences } from '../models/preferences.nodel';
+import { Preferences } from '../models/preferences.model';
+import {StorageService} from '../core/services/storage/storage.service';
 
 @Component({
   selector: 'app-preferences',
@@ -25,7 +26,8 @@ export class PreferencesComponent implements OnInit {
 
   public preferences: Preferences;
 
-  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute) { }
+  constructor(private fb: FormBuilder, private router: Router, private route: ActivatedRoute,
+              private storageService: StorageService) { }
 
   ngOnInit() {
     const support = this.route.snapshot.paramMap.get('support');
@@ -33,25 +35,35 @@ export class PreferencesComponent implements OnInit {
       this.support = true;
     }
 
-    this.preferences = JSON.parse(localStorage.getItem('preferences'));
-    if(!this.preferences) {
-      this.firstLogin = true;
-    }
-
     this.preferencesForm = this.fb.group({
-      observerEmail: [!!this.preferences ? this.preferences.observerEmail : null, [Validators.email]],
-      permission: [!!this.preferences ? this.preferences.permission : false, [Validators.required]],
-      observerName: [!!this.preferences ? this.preferences.observerName : null],
-      numberOfChicks: [!!this.preferences ? this.preferences.numberOfChicks : null, [Validators.pattern("^[0-9]*$")]],
-      habitat: [!!this.preferences ? this.preferences.habitat : null],
+      observerEmail: [null, [Validators.email]],
+      permission: [false, [Validators.required]],
+      observerName: [null],
     });
+
+    this.storageService.getPreferences()
+      .subscribe(preferences => {
+        console.log(preferences);
+        this.preferences = preferences;
+        if(!this.preferences.permission) {
+          this.firstLogin = true;
+        }
+        this.preferencesForm = this.fb.group({
+          observerEmail: [!!this.preferences ? this.preferences.observerEmail : null, [Validators.email]],
+          permission: [!!this.preferences ? this.preferences.permission : false, [Validators.required]],
+          observerName: [!!this.preferences ? this.preferences.observerName : null],
+        });
+      });
   }
 
   public save() {
-    this.preferences = this.preferencesForm.value;
-    if(this.preferences.permission) {
-      localStorage.setItem('preferences', JSON.stringify(this.preferences));
-      this.back();
+    const newPreferences = this.preferencesForm.value;
+    if(newPreferences.permission) {
+      const save = !!this.preferences ?
+        this.storageService.updatePreferences(newPreferences) :
+        this.storageService.updatePreferences(newPreferences);
+
+      save.subscribe(() => this.back());
     } else {
       this.permissionError = true;
     }
@@ -63,5 +75,9 @@ export class PreferencesComponent implements OnInit {
 
   public toggleConditions() {
     this.conditions = !this.conditions;
+  }
+
+  public goToInstallGuide() {
+    this.router.navigate(['/install-guide']);
   }
 }

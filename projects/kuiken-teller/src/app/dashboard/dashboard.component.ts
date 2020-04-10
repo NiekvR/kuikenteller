@@ -3,6 +3,11 @@ import { Router } from '@angular/router';
 import { Sighting } from '../models/sighting.model';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {DeviceDetectorService} from 'ngx-device-detector';
+import {StorageService} from '../core/services/storage/storage.service';
+import {map, switchMap} from 'rxjs/operators';
+import {CompressImageService} from '@ternwebdesign/compress-image';
+import {Observable, of} from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,8 +19,8 @@ export class DashboardComponent implements OnInit {
   private baseUrlServer = 'https://kuikens-app-test.herokuapp.com/api';
   private baseUrlProd = 'https://damp-sands-20336.herokuapp.com/api';
   private url: string;
-  private test = false;
-  private server = true;
+  private test = true;
+  private server = false;
 
   public allSightings: Sighting[] = [];
   public sightings: Sighting[] = [];
@@ -25,16 +30,20 @@ export class DashboardComponent implements OnInit {
   public progress: number;
   public deletingSighting: Sighting;
   public loading = false;
+  public isMobile = false;
 
-  constructor(private router: Router, private http: HttpClient, private snackBar: MatSnackBar) {
+  constructor(private router: Router, private http: HttpClient, private snackBar: MatSnackBar,
+              private deviceService: DeviceDetectorService, private storageService: StorageService,
+              private compressImageService: CompressImageService) {
     this.url = this.test ? this.server ? this.baseUrlServer : this.baseUrl : this.baseUrlProd;
   }
 
   ngOnInit() {
     this.setSightings();
+    this.isMobile = this.deviceService.isMobile();
   }
 
-  public addSighting(id?: string) {
+  public addSighting(id?: number) {
     if(!!id) {
       this.router.navigate(['/sighting', id]);
     } else {
@@ -44,6 +53,10 @@ export class DashboardComponent implements OnInit {
 
   public goToPreferences() {
     this.router.navigate(['/preferences']);
+  }
+
+  public goToInstallGuide() {
+    this.router.navigate(['/install-guide']);
   }
 
   public goToSupport() {
@@ -56,11 +69,8 @@ export class DashboardComponent implements OnInit {
 
   public delete(accept: boolean) {
     if(accept) {
-      const index = this.allSightings.findIndex(sighting => sighting.sigthingDate === this.deletingSighting.sigthingDate);
-      this.allSightings.splice(index, 1);
-      localStorage.setItem('sightinglist', JSON.stringify(this.allSightings));
-      this.sightings = this.allSightings.filter(sighting => !sighting.uploaded);
-      this.uploaded = this.allSightings.filter(sighting => sighting.uploaded);
+      this.storageService.deleteSighting(this.deletingSighting.localId).subscribe();
+      this.setSightings();
     }
     this.deletingSighting = null;
   }
@@ -72,13 +82,18 @@ export class DashboardComponent implements OnInit {
       const sightingsAtStart = this.sightings;
       const sightingsToUpload = this.sightings.filter(sighting => !sighting.uploaded);
       sightingsToUpload.forEach((sighting, index) => {
-        this.http.post(this.url + '/sighting', {sighting: sighting})
-          .subscribe(
-            (testSighting: Sighting) => {
+        this.http.post<Sighting>(this.url + '/sighting', {sighting: sighting})
+          .pipe(
+            map(testSighting => {
               sighting.waarnemingId = testSighting.waarnemingId;
               sighting.uploaded = true;
-              sightingsAtStart[index] = sighting;
-              localStorage.setItem('sightinglist', JSON.stringify(sightingsAtStart.concat(this.uploaded)));
+              return sighting;
+            }),
+            switchMap(uploadedSighting => !!uploadedSighting.photo ? this.compressImageOfUploadedSighting(uploadedSighting) : of(uploadedSighting)),
+            switchMap(uploadedSighting => this.storageService.updateSighting(uploadedSighting))
+          )
+          .subscribe(
+            () => {
               this.numberOfSightingsDone++;
               this.progress = this.numberOfSightingsDone / sightingsToUpload.length * 100;
               if (this.progress === 100) {
@@ -90,6 +105,7 @@ export class DashboardComponent implements OnInit {
               }
             },
             (error) => {
+              console.error(error);
               this.numberOfSightingsDone++;
               this.loading = false;
               this.snackBar.open('Het versturen van de waarneming van ' + sighting.sigthingDate.toString() + ' is niet gelukt: ' + error.error.message, null, {duration: 5000});
@@ -99,12 +115,33 @@ export class DashboardComponent implements OnInit {
   }
 
   private setSightings() {
-    let data = localStorage.getItem('sightinglist');
-    if(data) {
-      this.allSightings = JSON.parse(data);
-      this.sightings = this.allSightings.filter(sighting => !sighting.uploaded);
-      this.uploaded = this.allSightings.filter(sighting => sighting.uploaded);
+    this.storageService.getUploadedSightings()
+      .subscribe(sightings => this.uploaded = sightings);
+    this.storageService.getSightingsToUpload()
+      .subscribe(sightings => this.sightings = sightings);
+  }
+
+  private compressImageOfUploadedSighting(sighting: Sighting): Observable<Sighting> {
+    return this.compressImageService.compressAndRotateImageAsDataUrl(this.dataURLtoFile(sighting.photo, 'sighting.jpg'), 50)
+      .pipe(map(image => {
+        sighting.photo = image;
+        return sighting;
+      }));
+  }
+
+  private dataURLtoFile(dataurl, filename): File {
+
+    let arr = dataurl.split(','),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+
+    while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
     }
+
+    return new File([u8arr], filename, {type:mime});
   }
 
 }

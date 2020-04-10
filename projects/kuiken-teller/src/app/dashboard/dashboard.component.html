@@ -5,6 +5,9 @@
         <mat-icon aria-label="Example icon-button with a heart icon">cloud_upload</mat-icon>
       </button>
       <span class="title-center">KuikenTeller</span>
+      <button *ngIf="isMobile" mat-icon-button color="primary" (click)="goToInstallGuide()" aria-label="ga naar toevoegen aan home pagina">
+        <mat-icon aria-label="Example icon-button with a heart icon">add_to_home_screen</mat-icon>
+      </button>
       <button mat-icon-button color="primary" (click)="goToPreferences()" aria-label="ga naar instellingen">
         <mat-icon aria-label="Example icon-button with a heart icon">person</mat-icon>
       </button>
@@ -24,7 +27,7 @@
       <p matLine>
         <span> {{sighting.numberOfChicks}} kuikens</span>
       </p>
-      <button mat-button color="primary" (click)="addSighting(sighting.sigthingDate)">Bekijk</button>
+      <button mat-button color="primary" (click)="addSighting(sighting.localId)">Bekijk</button>
       <button mat-icon-button color="warn" (click)="deleteSighting(sighting)"  aria-label="verwijder waarneming">
         <mat-icon>delete</mat-icon>
       </button>
@@ -38,7 +41,7 @@
       <p matLine>
         <span> {{sighting.numberOfChicks}} kuikens</span>
       </p>
-      <button mat-button color="primary" (click)="addSighting(sighting.sigthingDate)">Bekijk</button>
+      <button mat-button color="primary" (click)="addSighting(sighting.localId)">Bekijk</button>
       <button mat-icon-button color="secondary" (click)="deleteSighting(sighting)"  aria-label="verwijder waarneming">
         <mat-icon>delete</mat-icon>
       </button>
@@ -68,6 +71,6 @@
   </div>
 
   <div class="footer">
-    <p (click)="goToSupport()">Voor vragen of support klik hier...</p>
+    <p (click)="goToSupport()">Voor vragen of ondersteuning klik hier...</p>
   </div>
 </div>

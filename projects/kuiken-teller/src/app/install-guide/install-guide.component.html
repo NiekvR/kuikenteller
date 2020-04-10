@@ -1,0 +1,82 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <button mat-icon-button color="primary" (click)="back()"  aria-label="terug">
+      <mat-icon [inline]="true">chevron_left</mat-icon>
+    </button>
+    <span class="title-center">Installeren</span>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<div *ngIf="Browser.SAFARI === browser && OS.IOS === os" class="container">
+  <h1>iOS - Safari </h1>
+
+  <p>Open het opties menu door op het volgende icoon te drukken:</p>
+  <img src="assets/guide/safari-step-1.png"/>
+
+  <p>Scroll vervolgens naar beneden om alle opties te zien:</p>
+  <img src="assets/guide/safari-step-2.png"/>
+
+  <p>Selecteer "Zet op beginscherm":</p>
+  <img src="assets/guide/safari-step-3.png"/>
+
+  <p>Druk in het volgende scherm op "Voeg toe":</p>
+  <img src="assets/guide/safari-step-4.png"/>
+</div>
+
+<div *ngIf="Browser.SAFARI !== browser && OS.IOS === os" class="container">
+  <h1>iOS - Anders </h1>
+
+  <p class="text-align-center">Helaas kunt u op de iPhone de KuikenTeller applicatie alleen installeren door safari als browser te gebruiken.
+    U kunt via deze browser de applicatie altijd als website blijven gebruiken.</p>
+</div>
+
+<div *ngIf="Browser.CHROME === browser && OS.ANDROID === os" class="container">
+  <h1>Android - Chrome </h1>
+
+  <p>Open het opties menu door op het volgende icoon te drukken:</p>
+  <img src="assets/guide/chrome-step-1.png"/>
+
+  <p>Selecteer "Add to Home Screen" of in het Nederlands "Zet op beginscherm":</p>
+  <img src="assets/guide/chrome-step-2.png"/>
+
+  <p>Druk in het volgende scherm op "Add" of in het Nederlands "Voeg toe":</p>
+  <img src="assets/guide/chrome-step-3.png"/>
+
+  <p>Druk ook in het volgende scherm op "Add" of in het Nederlands "Voeg toe":</p>
+  <img src="assets/guide/chrome-step-4.png"/>
+</div>
+
+<div *ngIf="Browser.FIREFOX === browser && OS.ANDROID === os" class="container">
+  <h1>Android - Firefox </h1>
+
+  <p>Selecteer het "Voeg toe aan beginscherm" icoon:</p>
+  <img src="assets/guide/firefox-step-1.png"/>
+
+  <p>Selecteer "Toevoegen aan startscherm":</p>
+  <img src="assets/guide/firefox-step-2.png"/>
+</div>
+
+<div *ngIf="Browser.SAMSUNG === browser && OS.ANDROID === os" class="container">
+  <h1>Android - Samsung </h1>
+
+  <p>Selecteer het "Voeg toe aan beginscherm" icoon:</p>
+  <img src="assets/guide/samsung-step-1.png"/>
+
+  <p>Selecteer "Toevoegen":</p>
+  <img src="assets/guide/samsung-step-2.png"/>
+</div>
+
+<div *ngIf="noAndroidBrowser() && OS.ANDROID === os" class="container">
+  <h1>Android - Anders</h1>
+
+  <p class="text-align-center">Helaas kunt via deze browser de applicatie niet installeren.
+    Gebruik bijvoorbeeld chrome, firefox of samsung om de applicatie op uw telefoon te installeren.
+    U kunt via deze browser de applicatie altijd als website blijven gebruiken.</p>
+</div>
+
+<div *ngIf="OS.ANDROID !== os && OS.IOS !== os" class="container">
+  <h1>Anders</h1>
+
+  <p class="text-align-center">Helaas kunt via deze telefoon de applicatie niet installeren.
+    U kunt via deze browser de applicatie altijd als website blijven gebruiken.</p>
+</div>

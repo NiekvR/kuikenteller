@@ -1,25 +1,30 @@
-import { Injectable } from '@angular/core';
-import { Router, CanActivate, ActivatedRouteSnapshot,RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Preferences } from './models/preferences.nodel';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {StorageService} from './core/services/storage/storage.service';
+import {Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 
 
 @Injectable()
 export class PermissionGuardService implements CanActivate {
 
-    constructor(private router: Router, private snackBar: MatSnackBar) {}
+  constructor(private router: Router, private snackBar: MatSnackBar, private storageService: StorageService) {
+  }
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean|UrlTree {
-      const preferences: Preferences = JSON.parse(localStorage.getItem('preferences'));
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    return this.storageService.getPreferences()
+      .pipe(
+        map(preferences => !!preferences && preferences.permission),
+        tap(permission => this.navigateToPreferences(permission)));
+  }
 
-      if (!preferences || !preferences.permission) {
-        this.snackBar.open('Om de applicatie te gebruiken moet u de voorwaarden hebben geaccepteerd.', null,{ duration: 5000 });
+  private navigateToPreferences(permission: boolean) {
+    if(!permission) {
+      this.snackBar.open('Om de applicatie te gebruiken moet u de voorwaarden hebben geaccepteerd.', null, {duration: 5000});
 
-        this.router.navigate(['preferences']);
-        return false;
-      }
-
-      return true;
+      this.router.navigate(['preferences']);
     }
+  }
 
 }

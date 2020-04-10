@@ -27,7 +27,7 @@ $kuikenApp-theme: mat-light-theme($kuikenApp-primary, $kuikenApp-accent, $kuiken
 @include angular-material-theme($kuikenApp-theme);
 
 /* You can add global styles to this file, and also import other style files */
-@import "~ng-pick-datetime/assets/style/picker.min.css";
+@import "~@danielmoncada/angular-datetime-picker/assets/style/picker.min.css";
 
 * {
   box-sizing: border-box;
@@ -146,4 +146,8 @@ owl-date-time-container {
 
 .lowercase {
   text-transform: lowercase;
+}
+
+.text-align-center {
+  text-align: center;
 }

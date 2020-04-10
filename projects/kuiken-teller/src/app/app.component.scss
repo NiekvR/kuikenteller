@@ -68,17 +68,6 @@
   height: 100%;
   background: white;
   position: relative;
-
-  .install {
-    background-color: #fec10d;
-    display: flex;
-    justify-content: center;
-    cursor: pointer;
-
-    span {
-      text-decoration: underline;
-    }
-  }
 }
 
 @media only screen and (min-height: 814px) {

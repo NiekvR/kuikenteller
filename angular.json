@@ -22,7 +22,7 @@
             "main": "projects/kuiken-teller/src/main.ts",
             "polyfills": "projects/kuiken-teller/src/polyfills.ts",
             "tsConfig": "projects/kuiken-teller/tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "projects/kuiken-teller/src/favicon.ico",
               "projects/kuiken-teller/src/assets",
@@ -46,7 +46,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -140,6 +139,11 @@
           "options": {
             "tsConfig": "projects/tern-support/tsconfig.lib.json",
             "project": "projects/tern-support/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tern-support/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -175,6 +179,11 @@
           "options": {
             "tsConfig": "projects/tern-compress-image/tsconfig.lib.json",
             "project": "projects/tern-compress-image/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tern-compress-image/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {
@@ -198,6 +207,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "kuiken-teller"
+    }
+  },
+  "defaultProject": "kuiken-teller",
+  "cli": {
+    "analytics": "13141720-e04d-475c-bf5d-a28f89281f24"
+  }
 }

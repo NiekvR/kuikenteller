@@ -1,11 +1,27 @@
 :host {
+  flex-grow: 1;
   max-height: 100%;
+
+  mat-icon {
+    font-size: 36px;
+  }
 
   .container {
       display: flex;
       flex-direction: column;
       height: calc(100% - 64px);
       overflow: scroll;
+
+      .install {
+        background-color: #fec10d;
+        display: flex;
+        justify-content: center;
+        cursor: pointer;
+
+        span {
+          text-decoration: underline;
+        }
+      }
 
       form {
           padding: 15px;

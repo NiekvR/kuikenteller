@@ -1,12 +1,14 @@
-import {Component, ElementRef, OnInit} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { Sighting } from '../models/sighting.model';
 import { FormControl, FormGroupDirective, NgForm, Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map } from 'rxjs/operators';
-import { Preferences } from '../models/preferences.nodel';
+import {debounce, debounceTime, filter, map, switchMap, tap} from 'rxjs/operators';
+import { Preferences } from '../models/preferences.model';
 import { CompressImageService } from '@ternwebdesign/compress-image';
+import {BehaviorSubject, of} from 'rxjs';
+import {StorageService} from '../core/services/storage/storage.service';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -21,12 +23,12 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   templateUrl: './sighting.component.html',
   styleUrls: ['./sighting.component.scss']
 })
-export class SightingComponent implements OnInit {
-  public sightings: Sighting[] = [];
+export class SightingComponent implements OnInit, OnDestroy {
+  public uploadedSightings: Sighting[] = [];
   public uploaded: Sighting[] = [];
   public sighting: Sighting;
   public sightingForm: FormGroup;
-  public age = 0;
+  public age = 1;
   public map: { zoom: number, position: Position } = { zoom: 15, position: { lat: 52.1008, lng: 5.2461 } };
   public marker: Position = {lat: null, lng: null};
   public base64textString: string;
@@ -77,21 +79,25 @@ export class SightingComponent implements OnInit {
   ]);
 
   private markerSet = false;
+  private positionSubject = new BehaviorSubject<{lat: number, lng: number}>(null);
 
   constructor(private fb: FormBuilder, private router: Router, private snackBar: MatSnackBar, private route: ActivatedRoute,
-              private el: ElementRef, private compressImageService: CompressImageService) { }
+              private el: ElementRef, private compressImageService: CompressImageService, private storageService: StorageService) { }
 
   ngOnInit() {
-    this.setFormBuilder();
-    const data = localStorage.getItem('sightinglist');
-    if (data) {
-      this.sightings = JSON.parse(data);
-      this.uploaded = this.sightings.filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value);
-    }
+    this.initializeComponent();
+
     this.setSighting();
-    this.sightingForm.valueChanges.subscribe(() => {
-      this.uploaded = this.sightings.filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value);
-    })
+
+    this.positionSubject.asObservable()
+      .pipe(
+        filter(latLng => !!latLng),
+        debounceTime(250))
+      .subscribe(latLng => this.setMapCenter(latLng.lat, latLng.lng));
+  }
+
+  ngOnDestroy() {
+    this.positionSubject.complete();
   }
 
   public nextStep() {
@@ -120,19 +126,23 @@ export class SightingComponent implements OnInit {
           const newSighting: Sighting = this.sightingForm.value;
           newSighting.photo = this.base64textString;
           newSighting.causeOfDeath = this.setCauseOfDeath(newSighting);
-          if (this.sighting) {
-            const index = this.sightings.findIndex(sighting => sighting.sigthingDate === this.sighting.sigthingDate);
-            this.sightings[index] = newSighting;
-            localStorage.setItem('sightinglist', JSON.stringify(this.sightings));
-          } else if (this.sightings.length > 0) {
-            this.sightings.unshift(newSighting);
-            localStorage.setItem('sightinglist', JSON.stringify(this.sightings));
-          } else {
-            localStorage.setItem('sightinglist', JSON.stringify([newSighting]));
-          }
-          this.snackBar.open('Waarneming opgeslagen', null, {duration: 3000});
+
+          const saveSubscriptions = !!this.sighting ?
+            this.storageService.updateSighting(newSighting) :
+            this.storageService.saveSighting(newSighting);
+
+          saveSubscriptions.subscribe(
+            () => {
+              this.snackBar.open('Waarneming opgeslagen', null, {duration: 3000});
+              this.router.navigate(['']);
+            },
+            () => {
+              this.snackBar.open('Er is iets fout gegaan bij het opslaan van de waarneming', null, {duration: 3000});
+              this.next(7);
+            });
+        } else {
+          this.router.navigate(['']);
         }
-        this.router.navigate(['']);
       }
     }
   }
@@ -147,7 +157,7 @@ export class SightingComponent implements OnInit {
 
         const containerEl = this.el.nativeElement.querySelector('.container');
 
-        this.compressImageService.compressAndRotateImageAsDataUrl(event.target.files[0], containerEl.offsetHeight)
+        this.compressImageService.compressAndRotateImageAsDataUrl(event.target.files[0], 800)
           .subscribe(base64 => this.base64textString = base64);
       }
     }
@@ -161,6 +171,7 @@ export class SightingComponent implements OnInit {
   };
 
   setAge(age) {
+    console.log(age);
     if(!this.isUploaded()) {
       this.sightingForm.patchValue({age: age});
       this.age = age;
@@ -181,7 +192,8 @@ export class SightingComponent implements OnInit {
   showOtherDeathReason() {
     return this.sightingForm.controls['deathReason'].value === 'oth' ||
       this.sightingForm.controls['aggression'].value === 'aot' ||
-      this.sightingForm.controls['humanActivity'].value === 'hot'
+      this.sightingForm.controls['humanActivity'].value === 'hot' ||
+      this.sightingForm.controls['predation'].value === 'pot'
   }
 
   toggleDeaths() {
@@ -198,13 +210,25 @@ export class SightingComponent implements OnInit {
 
   private getLocation() {
     this.setMapCenter(this.defaultPosition.lat, this.defaultPosition.lng, 7);
-    navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         if(!this.markerSet) {
           this.setMapCenter(position.coords.latitude, position.coords.longitude, 15);
           this.setMarker(position.coords.latitude, position.coords.longitude);
         }
       });
+  }
+
+  public resetLocationToYourLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setMapCenter(position.coords.latitude, position.coords.longitude, 15);
+      },
+      err => this.snackBar.open('Het is niet mogelijk om uw huidige locatie op te halen', null, {duration: 3000}));
+  }
+
+  public setPosition(latLngEvent) {
+    this.positionSubject.next(latLngEvent);
   }
 
   private setMapCenter(lat, lng, zoom?) {
@@ -227,31 +251,44 @@ export class SightingComponent implements OnInit {
 
   private setSighting() {
     this.route.paramMap
-      .pipe(map(params => params.get('id')))
-      .subscribe(params => {
-      if(!!params) {
-        this.sighting = this.sightings.find(sighting => sighting.sigthingDate === params);
-        this.formBuilderForSighting(this.sighting);
-        this.base64textString = this.sighting.photo;
-        this.setMapCenter(this.sighting.lat, this.sighting.lng);
-        this.setMarker(this.sighting.lat, this.sighting.lng);
-        this.age = parseInt(this.sighting.age);
-      } else {
-        this.getLocation();
-      }
-    })
+      .pipe(
+        map(params => params.get('id')),
+        switchMap(id => !!id ? this.storageService.getSighting(+id) : of(null)))
+      .subscribe(sighting => {
+        if(!!sighting) {
+          this.sighting = sighting;
+          this.formBuilderForSighting(this.sighting);
+          this.base64textString = this.sighting.photo;
+          this.setMapCenter(this.sighting.lat, this.sighting.lng);
+          this.setMarker(this.sighting.lat, this.sighting.lng);
+          this.age = parseInt(this.sighting.age);
+        }
+      })
   }
 
-  private setFormBuilder() {
-    const preferences: Preferences = JSON.parse(localStorage.getItem('preferences'));
+  private initializeComponent() {
+    this.storageService.getPreferences()
+      .pipe(
+        map(preferences => this.sightingForm = this.formBuilderForNewSighting(preferences)),
+        tap(() => this.getLocation()),
+        switchMap(() => this.storageService.getUploadedSightings()),
+        map(uploadedSightings => this.uploadedSightings = uploadedSightings),
+        map(uploadedSightings => uploadedSightings.filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value)),
+        map(uploadedSightings => this.uploaded = uploadedSightings),
+        switchMap(() => this.sightingForm.controls['species'].valueChanges))
+      .subscribe(() => this.uploaded =
+        this.uploadedSightings
+          .filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value));
+  }
 
-    this.sightingForm = this.fb.group({
-      species: [!!preferences.species ? preferences.species : 'mal', [Validators.required]],
+  private formBuilderForNewSighting(preferences: Preferences): FormGroup {
+    return this.fb.group({
+      species: ['mal', [Validators.required]],
       sigthingDate: [new Date(), [Validators.required]],
-      numberOfChicks: [preferences.numberOfChicks, [Validators.required, Validators.pattern("^[0-9]*$")]],
+      numberOfChicks: [null, [Validators.required, Validators.pattern("^[0-9]*$")]],
       gezinEerderGemeld: [null],
       certaintyRecapture: [null],
-      habitat: [preferences.habitat],
+      habitat: [null],
       remarks: [''],
       age: [this.age],
       lat: [null],
@@ -270,12 +307,14 @@ export class SightingComponent implements OnInit {
       humanActivity: [null],
       deathReasonOther: [null],
       extraFeedings: [null],
-      version: '2.0'
+      version: '2.0',
+      localId: null
     });
   }
 
   private formBuilderForSighting(sighting: Sighting) {
     this.sightingForm.patchValue({
+      species: sighting.species,
       sigthingDate: sighting.sigthingDate,
       numberOfChicks: sighting.numberOfChicks,
       gezinEerderGemeld: sighting.gezinEerderGemeld,
@@ -297,6 +336,7 @@ export class SightingComponent implements OnInit {
       humanActivity: sighting.humanActivity,
       deathReasonOther: sighting.deathReasonOther,
       extraFeedings: sighting.extraFeedings,
+      localId: sighting.localId
     });
 
     this.deaths = sighting.numberOfDeaths > 0 || (!!sighting.causeOfDeath && sighting.causeOfDeath.length > 0);

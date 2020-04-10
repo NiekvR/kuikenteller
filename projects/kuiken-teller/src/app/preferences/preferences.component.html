@@ -1,13 +1,16 @@
 <mat-toolbar>
   <mat-toolbar-row>
     <button mat-icon-button color="primary" (click)="back()" *ngIf="!firstLogin"  aria-label="terug">
-      <mat-icon>chevron_left</mat-icon>
+      <mat-icon [inline]="true">chevron_left</mat-icon>
     </button>
     <span class="title-center">Instellingen</span>
   </mat-toolbar-row>
 </mat-toolbar>
 
 <div class="container">
+  <div class="install p-5" (click)="goToInstallGuide()">
+    <span>Installeer de applicatie op je telefoon.</span>
+  </div>
   <mat-tab-group class="h-100" mat-align-tabs="center" animationDuration="0ms" [selectedIndex]="support ? 1 : 0" *ngIf="!conditions">
     <mat-tab label="Gebruiker">
       <div class="flex flex-column space-between h-100">
@@ -51,8 +54,8 @@
         </div>
       </div>
     </mat-tab>
-    <mat-tab label="Support" *ngIf="!firstLogin">
-      <tern-dashboard [userId]="preferences.observerEmail" [project]="'ekt'" [animated]="false"></tern-dashboard>
+    <mat-tab label="Ondersteuning" *ngIf="!firstLogin">
+      <tern-dashboard class="h-100" [userId]="preferences?.observerEmail" [project]="'ekt'" [animated]="false"></tern-dashboard>
     </mat-tab>
   </mat-tab-group>
 
