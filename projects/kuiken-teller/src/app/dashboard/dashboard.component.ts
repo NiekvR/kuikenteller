@@ -20,9 +20,8 @@ export class DashboardComponent implements OnInit {
   private baseUrlProd = 'https://damp-sands-20336.herokuapp.com/api';
   private url: string;
   private test = true;
-  private server = false;
+  private server = true;
 
-  public allSightings: Sighting[] = [];
   public sightings: Sighting[] = [];
   public uploaded: Sighting[] = [];
 
@@ -79,7 +78,6 @@ export class DashboardComponent implements OnInit {
     if(!this.loading) {
       this.loading = true;
       this.numberOfSightingsDone = 0;
-      const sightingsAtStart = this.sightings;
       const sightingsToUpload = this.sightings.filter(sighting => !sighting.uploaded);
       sightingsToUpload.forEach((sighting, index) => {
         this.http.post<Sighting>(this.url + '/sighting', {sighting: sighting})
