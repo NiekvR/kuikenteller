@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import {Sighting} from '../../../models/sighting.model';
 import {Preferences} from '../../../models/preferences.model';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
-import {from, Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {forkJoin, from, Observable} from 'rxjs';
+import {filter, map, switchMap, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +13,18 @@ export class StorageService {
   private PREFERENCES = 'preferences';
 
   constructor(private dbService: NgxIndexedDBService) {
-    let sightings: Sighting[] = JSON.parse(localStorage.getItem('sightinglist'));
+    let sightings: Sighting[] = JSON.parse(localStorage.getItem(this.SIGHTING_LIST));
     if(!!sightings && sightings.length > 0) {
       sightings.forEach(sighting => this.saveSighting(sighting).subscribe());
     }
-    localStorage.removeItem('sightinglist');
+    localStorage.removeItem(this.SIGHTING_LIST);
 
     let preferences: Preferences = JSON.parse(localStorage.getItem(this.PREFERENCES));
     if(!!preferences) {
       this.updatePreferences(preferences).subscribe();
     }
     localStorage.removeItem(this.PREFERENCES);
+    this.clearSightingsFromEarlierYears();
   }
 
   public saveSighting(sighting: Sighting): Observable<number> {
@@ -66,5 +67,15 @@ export class StorageService {
       .pipe(map(preferences => preferences.length > 0 ?
         preferences[0] :
         { observerEmail: null, observerName: null, permission: false } as Preferences))
+  }
+
+  public clearSightingsFromEarlierYears() {
+    this.getSightings()
+      .pipe(
+        map(sightings => sightings
+          .filter(sighting => new Date(sighting.sigthingDate).getTime() < new Date('2020-12-31').getTime())),
+        tap(sightings => console.log(sightings)),
+        switchMap(sightings => forkJoin(sightings.map(sighting => this.deleteSighting(sighting.localId)))))
+      .subscribe();
   }
 }

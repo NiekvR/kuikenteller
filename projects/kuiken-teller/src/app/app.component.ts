@@ -6,15 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  public animate = false;
   public openDetails = false;
 
   constructor() {
     setTimeout(() => {
-      this.animate = true;
-    }, 1000);
-    setTimeout(() => {
       this.openDetails = true;
-    }, 2200);
+    }, 1500);
   }
 }

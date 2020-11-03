@@ -1,7 +1,7 @@
 <div class="flex flex-column flex-grow">
   <mat-toolbar>
     <mat-toolbar-row>
-      <button mat-icon-button color="primary" (click)="uploadSightings()" [disabled]="sightings.length === 0 || loading"  aria-label="verzend waarnemingen">
+      <button mat-icon-button color="primary" [disabled]="true"  aria-label="verzend waarnemingen">
         <mat-icon aria-label="Example icon-button with a heart icon">cloud_upload</mat-icon>
       </button>
       <span class="title-center">KuikenTeller</span>
@@ -11,66 +11,68 @@
       <button mat-icon-button color="primary" (click)="goToPreferences()" aria-label="ga naar instellingen">
         <mat-icon aria-label="Example icon-button with a heart icon">person</mat-icon>
       </button>
-      <button mat-icon-button color="primary" (click)="addSighting()"  aria-label="nieuwe waarneming">
+      <button mat-icon-button color="primary" aria-label="nieuwe waarneming" [disabled]="true">
         <mat-icon aria-label="Example icon-button with a heart icon">add_circle</mat-icon>
       </button>
     </mat-toolbar-row>
   </mat-toolbar>
-
-  <mat-list class="flex-grow">
-    <h3 mat-subheader>MELDINGEN - NIET GEÜPLOAD</h3>
-    <mat-divider></mat-divider>
-    <mat-list-item *ngFor="let sighting of sightings">
-      <img *ngIf="!sighting.photo" matListAvatar src="assets/logo-duckling.jpg" alt="lege afbeelding placeholder">
-      <img *ngIf="sighting.photo" matListAvatar [src]="sighting.photo" alt="geuploade afbeelding">
-      <h3 matLine class="lowercase"> {{sighting.sigthingDate | date: 'dd MMMM yyyy HH:mm'}} </h3>
-      <p matLine>
-        <span> {{sighting.numberOfChicks}} kuikens</span>
-      </p>
-      <button mat-button color="primary" (click)="addSighting(sighting.localId)">Bekijk</button>
-      <button mat-icon-button color="warn" (click)="deleteSighting(sighting)"  aria-label="verwijder waarneming">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </mat-list-item>
-    <h3 mat-subheader>MELDINGEN - GEÜPLOAD</h3>
-    <mat-divider></mat-divider>
-    <mat-list-item *ngFor="let sighting of uploaded">
-        <img *ngIf="!sighting.photo" matListAvatar src="assets/logo-duckling.jpg" alt="lege afbeelding placeholder">
-        <img *ngIf="sighting.photo" matListAvatar [src]="sighting.photo" alt="geuploade afbeelding">
-      <h3 matLine class="lowercase"> {{sighting.sigthingDate | date: 'dd MMMM yyyy HH:mm'}} </h3>
-      <p matLine>
-        <span> {{sighting.numberOfChicks}} kuikens</span>
-      </p>
-      <button mat-button color="primary" (click)="addSighting(sighting.localId)">Bekijk</button>
-      <button mat-icon-button color="secondary" (click)="deleteSighting(sighting)"  aria-label="verwijder waarneming">
-        <mat-icon>delete</mat-icon>
-      </button>
-    </mat-list-item>
-  </mat-list>
-  <div class="overlay" *ngIf="loading || !!deletingSighting">
-    <mat-card *ngIf="loading">
-      <mat-card-content>
-        <h2 class="example-h2">Versturen...</h2>
-
-        <mat-progress-spinner
-            class="example-margin"
-            [mode]="'indeterminate'">
-        </mat-progress-spinner>
-      </mat-card-content>
-    </mat-card>
-    <mat-card *ngIf="!!deletingSighting">
-      <mat-card-content>
-        <h2 class="example-h2">Verwijderen</h2>
-        <p>Weet u zeker dat u deze waarneming wilt verwijderen?</p>
-        <div class="button-container">
-          <button mat-button color="primary" (click)="delete(false)">Annuleren</button>
-          <button mat-button color="primary" (click)="delete(true)">Ok</button>
-        </div>
-      </mat-card-content>
-    </mat-card>
+  <div class="p-15">
+    Op dit moment is het niet mogelijk uw waarnemingen in te voeren. Dit is weer mogelijk vanaf aankomend voorjaar.
   </div>
+<!--  <mat-list class="flex-grow">-->
+<!--    <h3 mat-subheader>MELDINGEN - NIET GEÜPLOAD</h3>-->
+<!--    <mat-divider></mat-divider>-->
+<!--    <mat-list-item *ngFor="let sighting of sightings">-->
+<!--      <img *ngIf="!sighting.photo" matListAvatar src="assets/logo-duckling.jpg" alt="lege afbeelding placeholder">-->
+<!--      <img *ngIf="sighting.photo" matListAvatar [src]="sighting.photo" alt="geuploade afbeelding">-->
+<!--      <h3 matLine class="lowercase"> {{sighting.sigthingDate | date: 'dd MMMM yyyy HH:mm'}} </h3>-->
+<!--      <p matLine>-->
+<!--        <span> {{sighting.numberOfChicks}} kuikens</span>-->
+<!--      </p>-->
+<!--      <button mat-button color="primary" (click)="addSighting(sighting.localId)">Bekijk</button>-->
+<!--      <button mat-icon-button color="warn" (click)="deleteSighting(sighting)"  aria-label="verwijder waarneming">-->
+<!--        <mat-icon>delete</mat-icon>-->
+<!--      </button>-->
+<!--    </mat-list-item>-->
+<!--    <h3 mat-subheader>MELDINGEN - GEÜPLOAD</h3>-->
+<!--    <mat-divider></mat-divider>-->
+<!--    <mat-list-item *ngFor="let sighting of uploaded">-->
+<!--        <img *ngIf="!sighting.photo" matListAvatar src="assets/logo-duckling.jpg" alt="lege afbeelding placeholder">-->
+<!--        <img *ngIf="sighting.photo" matListAvatar [src]="sighting.photo" alt="geuploade afbeelding">-->
+<!--      <h3 matLine class="lowercase"> {{sighting.sigthingDate | date: 'dd MMMM yyyy HH:mm'}} </h3>-->
+<!--      <p matLine>-->
+<!--        <span> {{sighting.numberOfChicks}} kuikens</span>-->
+<!--      </p>-->
+<!--      <button mat-button color="primary" (click)="addSighting(sighting.localId)">Bekijk</button>-->
+<!--      <button mat-icon-button color="secondary" (click)="deleteSighting(sighting)"  aria-label="verwijder waarneming">-->
+<!--        <mat-icon>delete</mat-icon>-->
+<!--      </button>-->
+<!--    </mat-list-item>-->
+<!--  </mat-list>-->
+<!--  <div class="overlay" *ngIf="loading || !!deletingSighting">-->
+<!--    <mat-card *ngIf="loading">-->
+<!--      <mat-card-content>-->
+<!--        <h2 class="example-h2">Versturen...</h2>-->
 
-  <div class="footer">
-    <p (click)="goToSupport()">Voor vragen of ondersteuning klik hier...</p>
-  </div>
+<!--        <mat-progress-spinner-->
+<!--            class="example-margin"-->
+<!--            [mode]="'indeterminate'">-->
+<!--        </mat-progress-spinner>-->
+<!--      </mat-card-content>-->
+<!--    </mat-card>-->
+<!--    <mat-card *ngIf="!!deletingSighting">-->
+<!--      <mat-card-content>-->
+<!--        <h2 class="example-h2">Verwijderen</h2>-->
+<!--        <p>Weet u zeker dat u deze waarneming wilt verwijderen?</p>-->
+<!--        <div class="button-container">-->
+<!--          <button mat-button color="primary" (click)="delete(false)">Annuleren</button>-->
+<!--          <button mat-button color="primary" (click)="delete(true)">Ok</button>-->
+<!--        </div>-->
+<!--      </mat-card-content>-->
+<!--    </mat-card>-->
+<!--  </div>-->
+
+<!--  <div class="footer">-->
+<!--    <p (click)="goToSupport()">Voor vragen of ondersteuning klik hier...</p>-->
+<!--  </div>-->
 </div>

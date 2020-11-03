@@ -74,43 +74,43 @@ export class DashboardComponent implements OnInit {
     this.deletingSighting = null;
   }
 
-  public uploadSightings() {
-    if(!this.loading) {
-      this.loading = true;
-      this.numberOfSightingsDone = 0;
-      const sightingsToUpload = this.sightings.filter(sighting => !sighting.uploaded);
-      sightingsToUpload.forEach((sighting, index) => {
-        this.http.post<Sighting>(this.url + '/sighting', {sighting: sighting})
-          .pipe(
-            map(testSighting => {
-              sighting.waarnemingId = testSighting.waarnemingId;
-              sighting.uploaded = true;
-              return sighting;
-            }),
-            switchMap(uploadedSighting => !!uploadedSighting.photo ? this.compressImageOfUploadedSighting(uploadedSighting) : of(uploadedSighting)),
-            switchMap(uploadedSighting => this.storageService.updateSighting(uploadedSighting))
-          )
-          .subscribe(
-            () => {
-              this.numberOfSightingsDone++;
-              this.progress = this.numberOfSightingsDone / sightingsToUpload.length * 100;
-              if (this.progress === 100) {
-                this.loading = false;
-                this.setSightings();
-                this.numberOfSightingsDone = null;
-                this.progress = 0;
-                this.snackBar.open('Waarnemingen verstuurd', null, {duration: 3000})
-              }
-            },
-            (error) => {
-              console.error(error);
-              this.numberOfSightingsDone++;
-              this.loading = false;
-              this.snackBar.open('Het versturen van de waarneming van ' + sighting.sigthingDate.toString() + ' is niet gelukt: ' + error.error.message, null, {duration: 5000});
-            });
-      });
-    }
-  }
+  // public uploadSightings() {
+  //   if(!this.loading) {
+  //     this.loading = true;
+  //     this.numberOfSightingsDone = 0;
+  //     const sightingsToUpload = this.sightings.filter(sighting => !sighting.uploaded);
+  //     sightingsToUpload.forEach((sighting, index) => {
+  //       this.http.post<Sighting>(this.url + '/sighting', {sighting: sighting})
+  //         .pipe(
+  //           map(testSighting => {
+  //             sighting.waarnemingId = testSighting.waarnemingId;
+  //             sighting.uploaded = true;
+  //             return sighting;
+  //           }),
+  //           switchMap(uploadedSighting => !!uploadedSighting.photo ? this.compressImageOfUploadedSighting(uploadedSighting) : of(uploadedSighting)),
+  //           switchMap(uploadedSighting => this.storageService.updateSighting(uploadedSighting))
+  //         )
+  //         .subscribe(
+  //           () => {
+  //             this.numberOfSightingsDone++;
+  //             this.progress = this.numberOfSightingsDone / sightingsToUpload.length * 100;
+  //             if (this.progress === 100) {
+  //               this.loading = false;
+  //               this.setSightings();
+  //               this.numberOfSightingsDone = null;
+  //               this.progress = 0;
+  //               this.snackBar.open('Waarnemingen verstuurd', null, {duration: 3000})
+  //             }
+  //           },
+  //           (error) => {
+  //             console.error(error);
+  //             this.numberOfSightingsDone++;
+  //             this.loading = false;
+  //             this.snackBar.open('Het versturen van de waarneming van ' + sighting.sigthingDate.toString() + ' is niet gelukt: ' + error.error.message, null, {duration: 5000});
+  //           });
+  //     });
+  //   }
+  // }
 
   private setSightings() {
     this.storageService.getUploadedSightings()
