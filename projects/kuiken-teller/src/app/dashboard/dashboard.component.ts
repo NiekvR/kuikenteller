@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
   private baseUrlServer = 'https://kuikens-app-test.herokuapp.com/api';
   private baseUrlProd = 'https://damp-sands-20336.herokuapp.com/api';
   private url: string;
-  private test = true;
+  private test = false;
   private server = true;
 
   public sightings: Sighting[] = [];
@@ -114,8 +114,10 @@ export class DashboardComponent implements OnInit {
 
   private setSightings() {
     this.storageService.getUploadedSightings()
+      .pipe(map(sightings => sightings.sort((a: Sighting, b: Sighting) => new Date(b.sigthingDate).getTime() - new Date(a.sigthingDate).getTime())))
       .subscribe(sightings => this.uploaded = sightings);
     this.storageService.getSightingsToUpload()
+      .pipe(map(sightings => sightings.sort((a: Sighting, b: Sighting) => new Date(b.sigthingDate).getTime() - new Date(a.sigthingDate).getTime())))
       .subscribe(sightings => this.sightings = sightings);
   }
 

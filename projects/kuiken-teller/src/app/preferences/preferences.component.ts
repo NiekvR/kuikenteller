@@ -43,7 +43,6 @@ export class PreferencesComponent implements OnInit {
 
     this.storageService.getPreferences()
       .subscribe(preferences => {
-        console.log(preferences);
         this.preferences = preferences;
         if(!this.preferences.permission) {
           this.firstLogin = true;

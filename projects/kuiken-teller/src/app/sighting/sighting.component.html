@@ -3,7 +3,8 @@
     <button mat-icon-button color="primary" (click)="next(currentStep - 1)">
       <mat-icon>chevron_left</mat-icon>
     </button>
-    <span class="title-center">{{ step[currentStep].title }}</span>
+    <span class="title-center" *ngIf="!sighting">{{ step[currentStep].title }}</span>
+    <span class="title-center" *ngIf="sighting">{{ sighting.sigthingDate | date: 'yyyy-M-d HH:mm' }}</span>
     <button *ngIf="sightingForm" mat-button color="primary" class="p-0" (click)="next(currentStep + 1)" [disabled]="isDisabled()" aria-label="volgende">
       {{ nextStep() }}
       <mat-icon [inline]="true">chevron_right</mat-icon>
@@ -52,7 +53,7 @@
       </mat-form-field>
       <mat-form-field *ngIf="uploaded.length > 0">
         <mat-select placeholder="Gezin eerder gemeld?" formControlName="gezinEerderGemeld">
-          <mat-option [value]="null">-- Nee --</mat-option>
+          <mat-option [value]="''">-- Nee --</mat-option>
           <mat-option *ngFor="let sighting of uploaded" [value]="sighting.waarnemingId">{{sighting.sigthingDate | date: 'dd MMMM yyyy HH:mm'}} - {{sighting.numberOfChicks}} kuikens</mat-option>
         </mat-select>
         <button matSuffix mat-icon-button (click)="hide[2] = ! hide[2]" color="{{ !hide[2] ? 'primary' : 'secondary'}}" aria-label="info">
@@ -225,7 +226,7 @@
 
     </ng-container>
     <ng-container *ngIf="step[6].active">
-      <button mat-fab class="button-search-location" color="primary" (click)="resetLocationToYourLocation()">
+      <button *ngIf="!sighting?.uploaded" mat-fab class="button-search-location" color="primary" (click)="resetLocationToYourLocation()">
         <mat-icon >location_searching</mat-icon>
       </button>
       <agm-map

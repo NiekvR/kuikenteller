@@ -87,8 +87,6 @@ export class SightingComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.initializeComponent();
 
-    this.setSighting();
-
     this.positionSubject.asObservable()
       .pipe(
         filter(latLng => !!latLng),
@@ -105,7 +103,6 @@ export class SightingComponent implements OnInit, OnDestroy {
   }
 
   public isDisabled() {
-    console.log('UPL', this.isUploaded());
     return this.isUploaded() ?
       false :
       !this.sightingForm.valid ?
@@ -116,7 +113,7 @@ export class SightingComponent implements OnInit, OnDestroy {
   next(step) {
     if (step === 0) {
       this.router.navigate(['']);
-    }else if (this.sightingForm.valid || this.isUploaded()) {
+    } else if (this.sightingForm.valid || this.isUploaded()) {
       !!this.step[step - 1] ? this.step[step - 1].active = false : null;
       !!this.step[step + 1] ? this.step[step + 1].active = false : null;
       this.step[step].active = true;
@@ -172,7 +169,6 @@ export class SightingComponent implements OnInit, OnDestroy {
   };
 
   setAge(age) {
-    console.log(age);
     if(!this.isUploaded()) {
       this.sightingForm.patchValue({age: age});
       this.age = age;
@@ -254,18 +250,22 @@ export class SightingComponent implements OnInit, OnDestroy {
     });
   }
 
+  private setLocationFromSighting(sighting: Sighting) {
+    this.setMapCenter(sighting.lat, sighting.lng);
+    this.setMarker(sighting.lat, sighting.lng);
+  }
+
   private setSighting() {
     this.route.paramMap
       .pipe(
         map(params => params.get('id')),
-        switchMap(id => !!id ? this.storageService.getSighting(+id) : of(null)))
+        switchMap(id => !!id ? this.storageService.getSighting(+id) : of(null)),
+        tap(sighting => !!sighting ? this.setLocationFromSighting(sighting) : this.getLocation()))
       .subscribe(sighting => {
         if(!!sighting) {
           this.sighting = sighting;
           this.formBuilderForSighting(this.sighting);
           this.base64textString = this.sighting.photo;
-          this.setMapCenter(this.sighting.lat, this.sighting.lng);
-          this.setMarker(this.sighting.lat, this.sighting.lng);
           this.age = parseInt(this.sighting.age);
         }
       })
@@ -275,15 +275,16 @@ export class SightingComponent implements OnInit, OnDestroy {
     this.storageService.getPreferences()
       .pipe(
         map(preferences => this.sightingForm = this.formBuilderForNewSighting(preferences)),
-        tap(() => this.getLocation()),
+        tap(() => this.setSighting()),
         switchMap(() => this.storageService.getUploadedSightings()),
         map(uploadedSightings => this.uploadedSightings = uploadedSightings),
         map(uploadedSightings => uploadedSightings.filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value)),
+        map(uploadedSightings => uploadedSightings.sort((a: Sighting, b: Sighting) => new Date(b.sigthingDate).getTime() - new Date(a.sigthingDate).getTime())),
         map(uploadedSightings => this.uploaded = uploadedSightings),
         switchMap(() => this.sightingForm.controls['species'].valueChanges))
-      .subscribe(() => this.uploaded =
-        this.uploadedSightings
-          .filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value));
+      .subscribe(() => this.uploaded = this.uploadedSightings
+          .filter(sighting => sighting.uploaded && sighting.species === this.sightingForm.controls['species'].value)
+          .sort((a: Sighting, b: Sighting) => new Date(b.sigthingDate).getTime() - new Date(a.sigthingDate).getTime()));
   }
 
   private formBuilderForNewSighting(preferences: Preferences): FormGroup {

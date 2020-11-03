@@ -15,6 +15,12 @@ export class GlobalErrorHandler implements ErrorHandler{
   }
 
   private sendFeedback(err: Error) {
+    const chunkFailedMessage = /Loading chunk [\d]+ failed/;
+
+    if (chunkFailedMessage.test(err.message)) {
+      window.location.reload();
+    }
+
     this.storageService.getPreferences()
       .pipe(map(preferences => (
           {
@@ -30,6 +36,12 @@ export class GlobalErrorHandler implements ErrorHandler{
   }
 
   private handleDebugError(err: Error) {
+    const chunkFailedMessage = /Loading chunk [\d]+ failed/;
+
+    if (chunkFailedMessage.test(err.message)) {
+      window.location.reload();
+    }
+
     console.error(err);
   }
 }

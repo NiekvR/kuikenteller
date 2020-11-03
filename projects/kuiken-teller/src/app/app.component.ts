@@ -8,7 +8,6 @@ import { Component } from '@angular/core';
 export class AppComponent {
   public animate = false;
   public openDetails = false;
-  public promptEvent;
 
   constructor() {
     setTimeout(() => {
@@ -17,13 +16,5 @@ export class AppComponent {
     setTimeout(() => {
       this.openDetails = true;
     }, 2200);
-
-    window.addEventListener('beforeinstallprompt', event => {
-      this.promptEvent = event;
-    });
-  }
-
-  public installPwa(): void {
-    this.promptEvent.prompt();
   }
 }

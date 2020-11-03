@@ -55,14 +55,16 @@
       </div>
     </mat-tab>
     <mat-tab label="Ondersteuning" *ngIf="!firstLogin">
-      <tern-dashboard class="h-100" [userId]="preferences?.observerEmail" [project]="'ekt'" [animated]="false"></tern-dashboard>
+      <div class="flex flex-column align-items-center">
+        <p class="text-align-center">Vragen en of opmerkingen kun je sturen naar <a href="mailto:info@sovon.nl" target="_blank">info@sovon.nl</a></p>
+      </div>
     </mat-tab>
   </mat-tab-group>
 
   <div *ngIf="conditions" class="p-15">
     <h1>Algemene Voorwaarden</h1>
 
-    <p >Bedankt voor uw bijdrage aan dit onderzoek. Om misverstanden te voorkomen willen wij graag duidelijkheid verschaffen
+    <p>Bedankt voor uw bijdrage aan dit onderzoek. Om misverstanden te voorkomen willen wij graag duidelijkheid verschaffen
       over hoe wij de gegevens gebruiken die u hier invoert. Door uw waarneming in te voeren gaat u akkoord met de volgende
       voorwaarden:</p>
     <p><strong>Gebruik gegevens waarneming:</strong> u doet met uw waarneming een belangrijke bijdrage aan wetenschappelijk onderzoek.

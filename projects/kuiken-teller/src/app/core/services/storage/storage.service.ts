@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import {Sighting} from '../../../models/sighting.model';
 import {Preferences} from '../../../models/preferences.model';
 import {NgxIndexedDBService} from 'ngx-indexed-db';
-import {from, Observable, of} from 'rxjs';
-import {catchError, filter, map} from 'rxjs/operators';
+import {from, Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +13,11 @@ export class StorageService {
   private PREFERENCES = 'preferences';
 
   constructor(private dbService: NgxIndexedDBService) {
-    let sightings: Sighting[] = JSON.parse(localStorage.getItem(this.SIGHTING_LIST));
+    let sightings: Sighting[] = JSON.parse(localStorage.getItem('sightinglist'));
     if(!!sightings && sightings.length > 0) {
       sightings.forEach(sighting => this.saveSighting(sighting).subscribe());
     }
-    localStorage.removeItem(this.SIGHTING_LIST);
+    localStorage.removeItem('sightinglist');
 
     let preferences: Preferences = JSON.parse(localStorage.getItem(this.PREFERENCES));
     if(!!preferences) {
@@ -28,7 +28,6 @@ export class StorageService {
 
   public saveSighting(sighting: Sighting): Observable<number> {
     delete sighting.localId;
-    console.log('SAVE', sighting);
     return from(this.dbService.add<Sighting>(this.SIGHTING_LIST, sighting));
   }
 
@@ -37,7 +36,6 @@ export class StorageService {
   }
 
   public updateSighting(sighting: Sighting): Observable<any> {
-    console.log('UP', sighting);
     return from(this.dbService.update<Sighting>(this.SIGHTING_LIST, sighting));
   }
 
