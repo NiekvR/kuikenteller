@@ -13,13 +13,13 @@ export class StorageService {
   private PREFERENCES = 'preferences';
 
   constructor(private dbService: NgxIndexedDBService) {
-    let sightings: Sighting[] = JSON.parse(localStorage.getItem(this.SIGHTING_LIST));
+    const sightings: Sighting[] = JSON.parse(localStorage.getItem(this.SIGHTING_LIST));
     if(!!sightings && sightings.length > 0) {
       sightings.forEach(sighting => this.saveSighting(sighting).subscribe());
     }
     localStorage.removeItem(this.SIGHTING_LIST);
 
-    let preferences: Preferences = JSON.parse(localStorage.getItem(this.PREFERENCES));
+    const preferences: Preferences = JSON.parse(localStorage.getItem(this.PREFERENCES));
     if(!!preferences) {
       this.updatePreferences(preferences).subscribe();
     }
@@ -29,15 +29,15 @@ export class StorageService {
 
   public saveSighting(sighting: Sighting): Observable<number> {
     delete sighting.localId;
-    return from(this.dbService.add<Sighting>(this.SIGHTING_LIST, sighting));
+    return from(this.dbService.add(this.SIGHTING_LIST, sighting));
   }
 
   public getSighting(id: number): Observable<Sighting> {
-    return from(this.dbService.getByID<Sighting>(this.SIGHTING_LIST, id)).pipe(filter(sighting => !!sighting));
+    return from(this.dbService.getByID(this.SIGHTING_LIST, id)).pipe(filter(sighting => !!sighting));
   }
 
   public updateSighting(sighting: Sighting): Observable<any> {
-    return from(this.dbService.update<Sighting>(this.SIGHTING_LIST, sighting));
+    return from(this.dbService.update(this.SIGHTING_LIST, sighting));
   }
 
   public deleteSighting(id: number): Observable<any> {
@@ -45,7 +45,7 @@ export class StorageService {
   }
 
   public getSightings(): Observable<Sighting[]> {
-    return from(this.dbService.getAll<Sighting>(this.SIGHTING_LIST))
+    return from(this.dbService.getAll(this.SIGHTING_LIST))
       .pipe(map(sightings => !!sightings && sightings.length > 0 ? sightings : []));
   }
 
@@ -57,13 +57,13 @@ export class StorageService {
     return this.getSightings().pipe(map(sightings => sightings.filter(sighting => !sighting.uploaded)));
   }
 
-  public updatePreferences(preferences: Preferences): Observable<number> {
+  public updatePreferences(preferences: Preferences): Observable<Preferences[]> {
     preferences.id = 1;
-    return from(this.dbService.update<Preferences>(this.PREFERENCES, preferences));
+    return from(this.dbService.update(this.PREFERENCES, preferences));
   }
 
   public getPreferences(): Observable<Preferences> {
-    return from(this.dbService.getAll<Preferences>(this.PREFERENCES))
+    return from(this.dbService.getAll(this.PREFERENCES))
       .pipe(map(preferences => preferences.length > 0 ?
         preferences[0] :
         { observerEmail: null, observerName: null, permission: false } as Preferences))
@@ -74,7 +74,6 @@ export class StorageService {
       .pipe(
         map(sightings => sightings
           .filter(sighting => new Date(sighting.sigthingDate).getTime() < new Date('2020-12-31').getTime())),
-        tap(sightings => console.log(sightings)),
         switchMap(sightings => forkJoin(sightings.map(sighting => this.deleteSighting(sighting.localId)))))
       .subscribe();
   }

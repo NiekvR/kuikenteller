@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {DBConfig, NgxIndexedDBModule} from 'ngx-indexed-db';
 import {StorageService} from './services/storage/storage.service';
+import {SightingService} from './services/sighting/sighting.service';
 
 const dbConfig: DBConfig  = {
   name: 'kuikenTellerDB',
@@ -56,7 +57,8 @@ const dbConfig: DBConfig  = {
 
 @NgModule({
   providers: [
-    StorageService
+    StorageService,
+    SightingService
   ],
   imports: [
     CommonModule,
