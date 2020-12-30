@@ -135,7 +135,7 @@
       "prefix": "tern",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/tern-support/tsconfig.lib.json",
             "project": "projects/tern-support/ng-package.json"
@@ -175,7 +175,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/tern-compress-image/tsconfig.lib.json",
             "project": "projects/tern-compress-image/ng-package.json"

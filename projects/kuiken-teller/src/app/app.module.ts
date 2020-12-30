@@ -33,6 +33,7 @@ import { InstallGuideComponent } from './install-guide/install-guide.component';
 import {DeviceDetectorService} from 'ngx-device-detector';
 import {GlobalErrorHandler} from './core/services/error/error.handler';
 import {CoreModule} from './core/core.module';
+import {AngularFirestoreModule} from '@angular/fire/firestore';
 
 @Injectable()
 export class DefaultIntl extends OwlDateTimeIntl {
@@ -75,7 +76,8 @@ registerLocaleData(localeNl);
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirePerformanceModule,
     AngularFireAnalyticsModule,
-    CoreModule
+    CoreModule,
+    AngularFirestoreModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'nl-AW'},
