@@ -34,6 +34,10 @@ import {DeviceDetectorService} from 'ngx-device-detector';
 import {GlobalErrorHandler} from './core/services/error/error.handler';
 import {CoreModule} from './core/core.module';
 import {AngularFirestoreModule} from '@angular/fire/firestore';
+import {APIKEY} from '../api-key';
+import {AngularFireStorageModule} from '@angular/fire/storage';
+import {LoginComponent} from './admin/login/login.component';
+import {AdminComponent} from './admin/admin/admin.component';
 
 @Injectable()
 export class DefaultIntl extends OwlDateTimeIntl {
@@ -53,7 +57,9 @@ registerLocaleData(localeNl);
     SightingComponent,
     SafePipe,
     PreferencesComponent,
-    InstallGuideComponent
+    InstallGuideComponent,
+    LoginComponent,
+    AdminComponent
   ],
   imports: [
     BrowserModule,
@@ -63,7 +69,7 @@ registerLocaleData(localeNl);
     FormsModule,
     ReactiveFormsModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyC5eDItm0yolchF4-WqFd_9uZ_PNcjw0VQ'
+      apiKey: APIKEY
     }),
     HttpClientModule,
     MatProgressSpinnerModule,
@@ -77,7 +83,8 @@ registerLocaleData(localeNl);
     AngularFirePerformanceModule,
     AngularFireAnalyticsModule,
     CoreModule,
-    AngularFirestoreModule
+    AngularFirestoreModule,
+    AngularFireStorageModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'nl-AW'},

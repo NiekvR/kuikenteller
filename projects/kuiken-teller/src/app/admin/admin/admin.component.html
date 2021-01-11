@@ -1,0 +1,91 @@
+<div>
+  <div>
+    <div class="flex justify-content-space-between align-items-center header">
+      <img src="assets/logo/kuikenTeller-logo_512x512.png" height="50">
+      <div class="flex justify-content-center">
+        <div class="btn animated m-r-15" (click)="signout()">
+          <span>Signout</span>
+        </div>
+        <div class="btn animated m-r-15" (click)="sightingsToCsv()">
+          <span>Download csv</span>
+        </div>
+        <div class="btn animated m-r-15" (click)="getImagesZip()">
+          <span>Download images</span>
+        </div>
+        <div class="btn animated" (click)="deleteImagesModal()">
+          <span>Delete images</span>
+        </div>
+      </div>
+      <img src="assets/ternproduct.png" height="50">
+    </div>
+
+    <div style="max-width: 100%;overflow: scroll;">
+      <table class="table table-hover" style="width:2500px">
+        <tr>
+          <th>ID</th>
+          <th>Soort</th>
+          <th>Datum</th>
+          <th>Aantal</th>
+          <th>Leeftijd</th>
+          <th>Breedtegraad</th>
+          <th>Lengtegraad</th>
+          <th>Waarnemer</th>
+          <th>Email</th>
+          <th>GEG</th>
+          <th>Zekerheid GEG</th>
+          <th>Opmerking</th>
+          <th>AV</th>
+          <th>Photo</th>
+          <th>Opp</th>
+          <th>Oever</th>
+          <th>Water</th>
+          <th>#sterfte</th>
+          <th>reden</th>
+          <th>gevoerd</th>
+        </tr>
+        <tr *ngFor="let sighting of sightings">
+          <td>{{sighting.waarnemingId}}</td>
+          <td>{{species[sighting.species]}}</td>
+          <td>{{sighting.sigthingDate | date:'yyyy-MM-dd'}}</td>
+          <td>{{sighting.numberOfChicks}}</td>
+          <td>{{ages[sighting.age]}}</td>
+          <td>{{sighting.lat}}</td>
+          <td>{{sighting.lng}}</td>
+          <td>{{sighting.observerName}}</td>
+          <td>{{sighting.observerEmail}}</td>
+          <td>{{sighting.gezinEerderGemeld}}</td>
+          <td>{{sighting.certaintyRecapture}}</td>
+          <td>{{sighting.remarks}}</td>
+          <td>{{sighting.permission}}</td>
+          <td><div *ngIf="!!sighting.photo">
+            <img class="tumbnail_size"
+                 [src]="sighting.photo"/>
+          </div>
+            <div *ngIf="!sighting.photo">Geen foto beschikbaar</div></td>
+          <td>{{sighting.surface}}</td>
+          <td>{{shore[sighting.shore]}}</td>
+          <td>{{water[sighting.water]}}</td>
+          <td>{{sighting.numberOfDeaths}}</td>
+          <td>{{!!causeOfDeath[sighting.causeOfDeath] ? causeOfDeath[sighting.causeOfDeath] : sighting.causeOfDeath}}</td>
+          <td>{{sighting.extraFeedings}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<ng-template #modal>
+  <div class="flex flex-column align-items-center">
+    <mat-icon color="warn">warning</mat-icon>
+    <h1 [style.font-size]="'24px'">WARNING</h1>
+    <div class="text-align-center m-b-15">Are you sure you want to remove all the images from storage? If you did not download the images they will be lost forever!</div>
+    <div class="flex justify-content-center">
+      <div class="btn animated m-r-15" (click)="closeDialog()">
+        <span>Cancel</span>
+      </div>
+      <div class="btn animated warning" (click)="deleteImages()">
+        <span>Delete</span>
+      </div>
+    </div>
+  </div>
+</ng-template>

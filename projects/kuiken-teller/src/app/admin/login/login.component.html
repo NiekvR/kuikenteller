@@ -1,0 +1,35 @@
+<img src="assets/logo/kuikenTeller-logo_512x512.png"/>
+<h1 class="m-0 m-b-20">Admin Dashboard</h1>
+<div class="card">
+  <h1 class="m-0">Login</h1>
+  <form [formGroup]="loginForm">
+    <span class="form-control">
+      <input id="email"
+             type="text"
+             placeholder="Emailadres"
+             [class.invalid]="loginForm.controls.email.errors"
+             formControlName="email"
+             autocomplete="off"/>
+      <label for="email" [class.invalid]="loginForm.controls.email.errors">Emailadres</label>
+    </span>
+    <span class="form-control">
+      <input id="password"
+             type="password"
+             placeholder="Wachtwoord"
+             [class.invalid]="loginForm.controls.password.errors"
+             formControlName="password"
+             autocomplete="off"/>
+      <label for="email" [class.invalid]="loginForm.controls.password.errors">Wachtwoord</label>
+    </span>
+    <span *ngIf="!!loged && !permission" class="flex justify-content-center error error-message">
+      De admin heeft u nog geen toegang gegeven voor het gebruik van deze applicatie. Probeert u het later nog een keer.
+    </span>
+    <span class="flex space-between">
+      <span class="flex flex-column">
+      </span>
+      <div class="btn animated" [class.disabled]="!loginForm.valid" (click)="submit()">
+        <span>Login</span>
+      </div>
+    </span>
+  </form>
+</div>

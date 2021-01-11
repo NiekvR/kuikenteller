@@ -122,7 +122,7 @@ export class SightingComponent implements OnInit, OnDestroy {
       if (step === 8) {
         if(!this.isUploaded()) {
           const newSighting: Sighting = this.sightingForm.value;
-          newSighting.photo = this.base64textString;
+          newSighting.photo = !!this.base64textString ? this.base64textString : null;
           newSighting.causeOfDeath = this.setCauseOfDeath(newSighting);
 
           const saveSubscriptions = !!this.sighting ?
@@ -265,7 +265,7 @@ export class SightingComponent implements OnInit, OnDestroy {
         if(!!sighting) {
           this.sighting = sighting;
           this.formBuilderForSighting(this.sighting);
-          this.base64textString = this.sighting.photo;
+          this.base64textString = this.sighting.photo as string;
           this.age = parseInt(this.sighting.age);
         }
       })

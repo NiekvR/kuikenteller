@@ -1,7 +1,7 @@
 <div class="flex flex-column flex-grow">
   <mat-toolbar>
     <mat-toolbar-row>
-      <button mat-icon-button color="primary" [disabled]="sightings.length === 0 || loading"  aria-label="verzend waarnemingen">
+      <button mat-icon-button color="primary" (click)="uploadSightings()" [disabled]="sightings.length === 0 || loading"  aria-label="verzend waarnemingen">
         <mat-icon aria-label="Example icon-button with a heart icon">cloud_upload</mat-icon>
       </button>
       <span class="title-center">KuikenTeller</span>

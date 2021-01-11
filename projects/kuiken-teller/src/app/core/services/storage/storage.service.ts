@@ -24,7 +24,7 @@ export class StorageService {
       this.updatePreferences(preferences).subscribe();
     }
     localStorage.removeItem(this.PREFERENCES);
-    this.clearSightingsFromEarlierYears();
+    // this.clearSightingsFromEarlierYears();
   }
 
   public saveSighting(sighting: Sighting): Observable<number> {
