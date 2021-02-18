@@ -213,7 +213,11 @@ export class SightingComponent implements OnInit, OnDestroy {
           this.setMapCenter(position.coords.latitude, position.coords.longitude, 15);
           this.setMarker(position.coords.latitude, position.coords.longitude);
         }
-      });
+      },
+      err => {
+        this.snackBar.open('Het is niet mogelijk om uw huidige locatie op te halen', null, {duration: 3000})
+      }
+      ,{timeout:10000});
   }
 
   public resetLocationToYourLocation() {
@@ -221,7 +225,10 @@ export class SightingComponent implements OnInit, OnDestroy {
       (position) => {
         this.setMapCenter(position.coords.latitude, position.coords.longitude, 15);
       },
-      err => this.snackBar.open('Het is niet mogelijk om uw huidige locatie op te halen', null, {duration: 3000}));
+      err => {
+        this.snackBar.open('Het is niet mogelijk om uw huidige locatie op te halen', null, {duration: 3000})
+      }
+      ,{timeout:2000});
   }
 
   public setPosition(latLngEvent) {

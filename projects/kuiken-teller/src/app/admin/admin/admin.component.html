@@ -22,6 +22,7 @@
     <div style="max-width: 100%;overflow: scroll;">
       <table class="table table-hover" style="width:2500px">
         <tr>
+          <th>uploadDate</th>
           <th>ID</th>
           <th>Soort</th>
           <th>Datum</th>
@@ -44,6 +45,7 @@
           <th>gevoerd</th>
         </tr>
         <tr *ngFor="let sighting of sightings">
+          <td>{{sighting.uploadDate}}</td>
           <td>{{sighting.waarnemingId}}</td>
           <td>{{species[sighting.species]}}</td>
           <td>{{sighting.sigthingDate | date:'yyyy-MM-dd'}}</td>

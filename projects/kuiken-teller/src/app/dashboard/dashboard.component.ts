@@ -80,6 +80,7 @@ export class DashboardComponent implements OnInit {
       this.numberOfSightingsDone = 0;
       const sightingsToUpload = this.sightings.filter(sighting => !sighting.uploaded);
       sightingsToUpload.forEach((sighting, index) => {
+        sighting.uploadDate = new Date().getTime();
         this.sightingService.add(sighting)
           .pipe(
             map(sightingId => {

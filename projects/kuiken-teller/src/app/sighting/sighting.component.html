@@ -13,7 +13,7 @@
 </mat-toolbar>
 
 <div class="container">
-  <form *ngIf="sightingForm" class="example-form h-100" [formGroup]="sightingForm">
+  <form *ngIf="sightingForm" class="example-form h-100 overflow-auto" [formGroup]="sightingForm">
     <ng-container *ngIf="step[1].active">
       <mat-form-field>
         <mat-select placeholder="Soort" formControlName="species" required>
@@ -83,14 +83,12 @@
 
     </ng-container>
     <ng-container *ngIf="step[2].active">
-      <mat-grid-list cols="2" rowHeight="130px">
-        <mat-grid-tile [class.active]="age === (x + 1)" [class.disabled]="sighting?.uploaded" *ngFor="let dummy of ' '.repeat(8).split(''), let x = index" (click)="setAge(x + 1)">
-          <div class="grid-tile-content">
-            <span>{{ x === 7 ? '>' + x + ' weken' : x + '-' + (x + 1) + ' weken'}}</span>
-            <img [src]="'assets/ages/mallard/' + x + '.png'" [alt]="'leeftijds categorie eend ' + x"/>
-          </div>
-        </mat-grid-tile>
-      </mat-grid-list>
+      <div class="flex flex-wrap">
+        <div class="grid-tile-content" [class.active]="age === (x + 1)" [class.disabled]="sighting?.uploaded" *ngFor="let dummy of ' '.repeat(8).split(''), let x = index" (click)="setAge(x + 1)">
+          <span>{{ x === 7 ? '>' + x + ' weken' : x + '-' + (x + 1) + ' weken'}}</span>
+          <img [src]="'assets/ages/mallard/' + x + '.png'" [alt]="'leeftijds categorie eend ' + x"/>
+        </div>
+      </div>
     </ng-container>
     <ng-container *ngIf="step[3].active">
       <h3 class="m-t-0 p-l-15 p-r-15">Habitat</h3>

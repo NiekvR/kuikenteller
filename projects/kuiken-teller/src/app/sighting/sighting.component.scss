@@ -13,33 +13,32 @@
     height: calc(100% - 64px);
     overflow: hidden;
 
-    mat-grid-tile {
-        &.active {
-            background-color: #fdbe11;
+    .grid-tile-content {
+      position: relative;
+      flex: 0 0 50%;
+      height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
 
-            &.disabled {
-              background-color: #e7e7e7;
-            }
+      span {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      &.active {
+        background-color: #fdbe11;
+
+        &.disabled {
+          background-color: #e7e7e7;
         }
-
-        .grid-tile-content {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-
-            span {
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
-            img {
-                max-width: 100%;
-                transform: translate(0, -20px);
-            }
-        }
+      }
     }
 
     form {
@@ -74,9 +73,9 @@
     }
 
     form > * {
-        .hidden {
-            display: none;
-        }
+      .hidden {
+        display: none;
+      }
     }
 
     .button-search-location {
@@ -87,7 +86,7 @@
     }
 
     agm-map {
-        height: 100%;
+      height: 100%;
     }
 
     mat-form-field {

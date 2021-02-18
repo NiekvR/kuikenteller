@@ -1,7 +1,7 @@
 <div class="flex flex-column flex-grow">
   <mat-toolbar>
     <mat-toolbar-row>
-      <button mat-icon-button color="primary" (click)="uploadSightings()" [disabled]="sightings.length === 0 || loading"  aria-label="verzend waarnemingen">
+      <button mat-icon-button color="primary" (click)="uploadSightings()" [disabled]="sightings.length === 0 || loading" aria-label="verzend waarnemingen">
         <mat-icon aria-label="Example icon-button with a heart icon">cloud_upload</mat-icon>
       </button>
       <span class="title-center">KuikenTeller</span>
@@ -11,7 +11,7 @@
       <button mat-icon-button color="primary" (click)="goToPreferences()" aria-label="ga naar instellingen">
         <mat-icon aria-label="Example icon-button with a heart icon">person</mat-icon>
       </button>
-      <button mat-icon-button color="primary" (click)="addSighting()"  aria-label="nieuwe waarneming">
+      <button mat-icon-button color="primary" (click)="addSighting()" aria-label="nieuwe waarneming">
         <mat-icon aria-label="Example icon-button with a heart icon">add_circle</mat-icon>
       </button>
     </mat-toolbar-row>

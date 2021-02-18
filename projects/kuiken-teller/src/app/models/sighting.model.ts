@@ -11,6 +11,7 @@ export class Sighting {
     age: string;
     photo?: string;
     waarnemingId?: string;
+    uploadDate?: number;
     sigthingDate: Date | string;
     observerName?: string;
     observerEmail?: string;

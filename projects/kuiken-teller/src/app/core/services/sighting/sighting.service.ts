@@ -21,7 +21,7 @@ export class SightingService {
     const nextSighting = { ...sighting };
     nextSighting.photo = null;
     return this.addSighting(nextSighting)
-      .pipe(switchMap(id => !!sighting.photo ? this.uploadSightingImage(nextSighting, id) : of(id)));
+      .pipe(switchMap(id => !!sighting.photo ? this.uploadSightingImage(nextSighting, sighting.photo, id) : of(id)));
   }
 
   public getAll(query?: QueryFn<DocumentData>): Observable<Sighting[]> {
@@ -39,8 +39,8 @@ export class SightingService {
       map(doc => doc.id));
   }
 
-  private uploadSightingImage(sighting: Sighting, fileName: string): Observable<string> {
-    return this.imageService.upload(sighting.photo, fileName +'.jpg')
+  private uploadSightingImage(sighting: Sighting, base64: string, fileName: string): Observable<string> {
+    return this.imageService.upload(base64, fileName +'.jpg')
       .pipe(
         switchMap(url => this.updateSightingWithPhotoUrl(fileName, sighting, url)),
         map(() => fileName));

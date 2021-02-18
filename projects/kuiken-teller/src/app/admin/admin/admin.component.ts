@@ -83,8 +83,9 @@ export class AdminComponent implements OnInit, OnDestroy {
   };
 
   // @ts-ignore
-  public fields = ['sigthingDate', 'waarnemingId', 'species', 'numberOfChicks', 'observerName', 'observerEmail', 'gezinEerderGemeld', 'certaintyRecapture', 'remarks', 'lat', 'lng', 'age', 'permission', 'surface', 'shore', 'water', 'numberOfDeaths', 'causeOfDeath', 'extraFeedings'];
+  public fields = ['uploadDate', 'sigthingDate', 'waarnemingId', 'species', 'numberOfChicks', 'observerName', 'observerEmail', 'gezinEerderGemeld', 'certaintyRecapture', 'remarks', 'lat', 'lng', 'age', 'permission', 'surface', 'shore', 'water', 'numberOfDeaths', 'causeOfDeath', 'extraFeedings'];
 
+  public opts = { fields: this.fields }
   public subscription: Subscription;
 
   public dialogRef: MatDialogRef<any>;
@@ -117,7 +118,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.sightingService.getAll()
       .subscribe(sightings => {
         try {
-          const parser = new Parser(this.fields);
+          const parser = new Parser(this.opts);
           const csv = parser.parse(sightings);
           const blob = new Blob([csv], { type: 'text/csv' });
           const url= window.URL.createObjectURL(blob);
@@ -147,7 +148,8 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   private setSightings() {
-    this.subscription = this.sightingService.getAll(ref => ref.limit(50))
+    this.subscription = this.sightingService.getAll(ref => ref.orderBy('uploadDate', 'desc').limit(50))
+      .pipe()
       .subscribe(sightings => this.sightings = sightings);
   }
 
