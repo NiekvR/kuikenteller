@@ -5,7 +5,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {DeviceDetectorService} from 'ngx-device-detector';
 import {StorageService} from '../core/services/storage/storage.service';
 import {map, switchMap} from 'rxjs/operators';
-import {CompressImageService} from '@ternwebdesign/compress-image';
 import {Observable, of} from 'rxjs';
 import {SightingService} from '../core/services/sighting/sighting.service';
 

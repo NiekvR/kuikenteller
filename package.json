@@ -25,7 +25,6 @@
     "@angular/router": "^11.0.5",
     "@angular/service-worker": "^11.0.5",
     "@danielmoncada/angular-datetime-picker": "^10.0.0",
-    "@ternwebdesign/compress-image": "^0.1.0",
     "exifreader": "^3.12.3",
     "file-saver": "^2.0.5",
     "firebase": "^8.0.0",

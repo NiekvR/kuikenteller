@@ -24,84 +24,32 @@ export class CompressImageService {
       .pipe(map(ctx => this.getImageAsDataUrl(ctx)));
   }
 
-  public rotateImageAsFile(file: File): Observable<File> {
-    const fileName = file.name;
-
-    return this.getImageAsCanvas(file)
-      .pipe(switchMap(ctx => this.getImageAsFile(ctx, fileName)));
-  }
-
-  public rotateImageAsDataUrl(file: File): Observable<string> {
-    return this.getImageAsCanvas(file)
-      .pipe(map(ctx => this.getImageAsDataUrl(ctx)));
-  }
-
-  private getImageAsCanvas(file: File, width?: number): Observable<CanvasRenderingContext2D> {
-    return this.getImageOrientation(file)
+  private getImageAsCanvas(file: File, width: number): Observable<CanvasRenderingContext2D> {
+    return this.getImageAsString(file)
       .pipe(
-        switchMap(orientation => this.getImageAsString(file, orientation)),
-        switchMap(result => !!width ?
-          this.getCompressedImage(result.image, result.orientation, width) :
-          this.getRotatedImage(result.image, result.orientation)));
+        switchMap(image => this.getCompressedImage(image, width)));
   }
 
-  private getImageOrientation(file: File): Observable<number> {
-    let fileReader$;
-    if(this.isTiffOrJpeg(file)) {
-      const reader = new FileReader();
-      fileReader$ = fromEvent(reader, 'load')
-        .pipe(take(1), map(readerEvent => !!ExifReader.load((readerEvent.target as any).result)['Orientation'] ?
-          ExifReader.load((readerEvent.target as any).result)['Orientation'].value : null));
-
-      reader.readAsArrayBuffer(file);
-    }
-
-    return this.isTiffOrJpeg(file) ? fileReader$ : of(null);
-  };
-
-  private getImageAsString(file: File, orientation: number): Observable<{ image: string, orientation: number }> {
-    const width = 500;
-    // const fileName = e.target.files[0].name;
+  private getImageAsString(file: File): Observable<string> {
     const fileReader = new FileReader();
     const fileReader$ = fromEvent(fileReader, 'load')
-      .pipe(take(1), map(readerEvent => { return { image: (readerEvent.target as any).result, orientation: orientation }}));
+      .pipe(take(1), map(readerEvent => (readerEvent.target as any).result ));
 
     fileReader.readAsDataURL(file);
 
     return fileReader$;
   }
 
-  private getCompressedImage(image: string, orientation: number, width: number): Observable<CanvasRenderingContext2D> {
+  private getCompressedImage(image: string, width: number): Observable<CanvasRenderingContext2D> {
     const img = new Image();
     const imgLoader$ = fromEvent(img, 'load')
       .pipe(take(1), map(() => {
         const scaleFactor = width / img.width;
         const height = img.height * scaleFactor;
 
-        const ctx = this.getCanvas(width, height, orientation);
-        if(!!orientation) {
-          this.rotateImage(ctx, width, height, orientation);
-        }
+        const ctx = this.getCanvas(width, height);
 
         ctx.drawImage(img, 0, 0, width, img.height * scaleFactor);
-        return ctx;
-      }));
-
-    img.src = image;
-
-    return imgLoader$;
-  }
-
-  private getRotatedImage(image: string, orientation: number): Observable<CanvasRenderingContext2D> {
-    const img = new Image();
-    const imgLoader$ = fromEvent(img, 'load')
-      .pipe(take(1), map(() => {
-        const ctx = this.getCanvas(img.width, img.height, orientation);
-        if(!!orientation) {
-          this.rotateImage(ctx, img.width, img.height, orientation);
-        }
-
-        ctx.drawImage(img, 0, 0, img.width, img.height);
         return ctx;
       }));
 
@@ -126,17 +74,12 @@ export class CompressImageService {
     return ctx.canvas.toDataURL('image/jpeg', 1);
   }
 
-  private getCanvas(width: number, height: number, orientation: number): CanvasRenderingContext2D  {
+  private getCanvas(width: number, height: number): CanvasRenderingContext2D  {
     const elem = document.createElement('canvas');
     const ctx = elem.getContext('2d');
 
-    if (4 < orientation && orientation < 9) {
-      elem.width = height;
-      elem.height = width;
-    } else {
-      elem.width = width;
-      elem.height = height;
-    }
+    elem.width = width;
+    elem.height = height;
 
     return ctx;
   }

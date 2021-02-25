@@ -6,7 +6,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {debounce, debounceTime, filter, map, switchMap, tap} from 'rxjs/operators';
 import { Preferences } from '../models/preferences.model';
-import { CompressImageService } from '@ternwebdesign/compress-image';
 import {BehaviorSubject, of} from 'rxjs';
 import {StorageService} from '../core/services/storage/storage.service';
 
@@ -69,7 +68,7 @@ export class SightingComponent implements OnInit, OnDestroy {
     8: { active: false, title: 'Opslaan' }
   };
 
-  public maxDate = new Date();
+  public maxDate = new Date(new Date().getTime() + 60*60*1000);
   public minDate = new Date(`01-01-${new Date().getFullYear()}`);
 
   public matcher = new MyErrorStateMatcher();
@@ -155,6 +154,7 @@ export class SightingComponent implements OnInit, OnDestroy {
 
         const containerEl = this.el.nativeElement.querySelector('.container');
 
+        console.log()
         this.compressImageService.compressAndRotateImageAsDataUrl(event.target.files[0], 800)
           .subscribe(base64 => this.base64textString = base64);
       }
@@ -245,6 +245,7 @@ export class SightingComponent implements OnInit, OnDestroy {
     if(!!zoom) {
       this.map.zoom = zoom
     }
+    this.setMarker(lat, lng);
   }
 
   private setMarker(lat: number, lng: number) {
