@@ -47,7 +47,11 @@ export class SightingService {
   }
 
   private convertSighting(item: any): Sighting {
-    item.sigthingDate = item.sigthingDate.toDate();
+    if(item.sigthingDate instanceof firebase.firestore.Timestamp) {
+      item.sigthingDate = item.sigthingDate.toDate();
+    } else {
+      item.sigthingDate = new Date(item.sigthingDate);
+    }
     return item;
   }
 

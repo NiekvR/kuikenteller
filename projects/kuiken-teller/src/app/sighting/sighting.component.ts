@@ -4,10 +4,11 @@ import { FormControl, FormGroupDirective, NgForm, Validators, FormGroup, FormBui
 import { ErrorStateMatcher } from '@angular/material/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {debounce, debounceTime, filter, map, switchMap, tap} from 'rxjs/operators';
+import { debounceTime, filter, map, switchMap, tap} from 'rxjs/operators';
 import { Preferences } from '../models/preferences.model';
 import {BehaviorSubject, of} from 'rxjs';
 import {StorageService} from '../core/services/storage/storage.service';
+import {CompressImageService} from '@ternwebdesign/compress-image';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {

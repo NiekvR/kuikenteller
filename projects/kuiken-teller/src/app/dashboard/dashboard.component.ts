@@ -7,6 +7,7 @@ import {StorageService} from '../core/services/storage/storage.service';
 import {map, switchMap} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
 import {SightingService} from '../core/services/sighting/sighting.service';
+import {CompressImageService} from '@ternwebdesign/compress-image';
 
 @Component({
   selector: 'app-dashboard',
