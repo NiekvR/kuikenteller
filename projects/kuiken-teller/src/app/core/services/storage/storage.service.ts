@@ -73,8 +73,12 @@ export class StorageService {
     this.getSightings()
       .pipe(
         map(sightings => sightings
-          .filter(sighting => new Date(sighting.sigthingDate).getTime() < new Date('2020-12-31').getTime())),
-        switchMap(sightings => forkJoin(sightings.map(sighting => this.deleteSighting(sighting.localId)))))
+          .filter(sighting => new Date(sighting.sigthingDate).getTime() < new Date('2021-12-31').getTime())),
+        switchMap(sightings => this.deleteAllSightings(sightings)))
       .subscribe();
+  }
+
+  private deleteAllSightings(sightings: Sighting[]): Observable<any[]> {
+    return forkJoin(sightings.map(sighting => this.deleteSighting(sighting.localId)));
   }
 }
