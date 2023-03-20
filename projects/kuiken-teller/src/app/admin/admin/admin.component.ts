@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SightingService} from '../../core/services/sighting/sighting.service';
 import {Sighting} from '../../models/sighting.model';
-import {from, Subscription} from 'rxjs';
-import {AngularFireAuth} from '@angular/fire/auth';
+import {from, ReplaySubject, Subscription} from 'rxjs';
 import {Router} from '@angular/router';
 import { Parser } from 'json2csv';
 import {ImageService} from '../../core/services/image/image.service';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {filter} from 'rxjs/operators';
+import {limit, orderBy} from '@angular/fire/firestore';
+import {Auth, signOut} from '@angular/fire/auth';
 
 @Component({
   selector: 'app-admin',
@@ -92,7 +92,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   @ViewChild('modal', { read: TemplateRef }) modalTemplate:TemplateRef<any>;
 
-  constructor(private sightingService: SightingService, public afAuth: AngularFireAuth, private router: Router,
+  constructor(private sightingService: SightingService, public afAuth: Auth, private router: Router,
               private imageService: ImageService, public dialog: MatDialog) { }
 
   ngOnInit(): void {
@@ -110,7 +110,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   public signout() {
-    from(this.afAuth.signOut())
+    from(signOut(this.afAuth))
       .subscribe(() => this.router.navigate([ '/login' ]));
   }
 
@@ -148,8 +148,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   private setSightings() {
-    this.subscription = this.sightingService.getAll(ref => ref.orderBy('uploadDate', 'desc').limit(50))
-      .pipe()
+    this.subscription = this.sightingService.queryData()
       .subscribe(sightings => this.sightings = sightings);
   }
 

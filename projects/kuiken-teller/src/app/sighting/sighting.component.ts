@@ -155,7 +155,6 @@ export class SightingComponent implements OnInit, OnDestroy {
 
         const containerEl = this.el.nativeElement.querySelector('.container');
 
-        console.log()
         this.compressImageService.compressAndRotateImageAsDataUrl(event.target.files[0], 800)
           .subscribe(base64 => this.base64textString = base64);
       }

@@ -1,20 +1,30 @@
-import { Injectable } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
 import {Sighting} from '../../../models/sighting.model';
-import {AngularFirestore, AngularFirestoreCollection, QueryFn} from '@angular/fire/firestore';
 import {map, switchMap} from 'rxjs/operators';
 import {ImageService} from '../image/image.service';
-import firebase from 'firebase';
-import DocumentData = firebase.firestore.DocumentData;
+import {
+  collection,
+  collectionData,
+  Firestore,
+  CollectionReference,
+  addDoc,
+  query,
+  getDocs,
+  doc,
+  QueryDocumentSnapshot,
+  updateDoc, orderBy, limit
+} from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SightingService {
-  private collection: AngularFirestoreCollection<Sighting>;
+  private firestore: Firestore = inject(Firestore);
+  private collection: CollectionReference<Sighting>;
 
-  constructor(private imageService: ImageService, private db: AngularFirestore) {
-    this.collection = this.db.collection<Sighting>('sighting');
+  constructor(private imageService: ImageService) {
+    this.collection = collection(this.firestore, 'sighting') as CollectionReference<Sighting>;
   }
 
   public add(sighting: Sighting): Observable<string> {
@@ -24,19 +34,25 @@ export class SightingService {
       .pipe(switchMap(id => !!sighting.photo ? this.uploadSightingImage(nextSighting, sighting.photo, id) : of(id)));
   }
 
-  public getAll(query?: QueryFn<DocumentData>): Observable<Sighting[]> {
-    return this.db.collection<Sighting>('sighting', query).snapshotChanges().pipe(
-      map(list => list.map(a => {
-        let item = a.payload.doc.data() as Sighting;
-        (item as any).waarnemingId = a.payload.doc.id;
-        item = this.convertSighting(item);
-        return item;
-      })));
+  public queryData(): Observable<Sighting[]> {
+    return from(getDocs<Sighting>(query<Sighting>(this.collection, orderBy('uploadDate', 'desc'), limit(50))))
+      .pipe(map(documents => documents.docs.map(document => this.convertDocToItem(document))))
+  }
+
+  public getAll(): Observable<Sighting[]> {
+    return collectionData(this.collection, { idField: 'id' }) as Observable<Sighting[]>;
+    // return this.db.collection<Sighting>('sighting', query).snapshotChanges().pipe(
+    //   map(list => list.map(a => {
+    //     let item = a.payload.doc.data() as Sighting;
+    //     (item as any).waarnemingId = a.payload.doc.id;
+    //     item = this.convertSighting(item);
+    //     return item;
+    //   })));
   }
 
   private addSighting(sighting: Sighting): Observable<string> {
-    return from(this.collection.add(sighting)).pipe(
-      map(doc => doc.id));
+    return from(addDoc(this.collection, sighting)).pipe(
+      map(document => document.id));
   }
 
   private uploadSightingImage(sighting: Sighting, base64: string, fileName: string): Observable<string> {
@@ -46,17 +62,23 @@ export class SightingService {
         map(() => fileName));
   }
 
+  protected convertDocToItem(document: QueryDocumentSnapshot<Sighting>): Sighting {
+    let item = document.data() as Sighting;
+    (item as any).id = (document as any).id;
+    item = this.convertSighting(item);
+    return item;
+  }
+
   private convertSighting(item: any): Sighting {
-    if(item.sigthingDate instanceof firebase.firestore.Timestamp) {
+    if(!!item.sigthingDate) {
       item.sigthingDate = item.sigthingDate.toDate();
-    } else {
-      item.sigthingDate = new Date(item.sigthingDate);
     }
     return item;
   }
 
   private updateSightingWithPhotoUrl(id: string, sighting: Sighting, url): Observable<any> {
     sighting.photo = url;
-    return from(this.collection.doc(id).update(sighting))
+    const docRef = doc<Sighting>(this.collection, id);
+    return from(updateDoc<Sighting>(docRef, sighting));
   }
 }

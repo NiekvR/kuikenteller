@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {AngularFireAuth} from '@angular/fire/auth';
 import {Router} from '@angular/router';
 import {from} from 'rxjs';
 import {tap} from 'rxjs/operators';
+import {Auth, signInWithEmailAndPassword} from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   public loged = false;
   public permission: boolean;
 
-  constructor(private formBuilder: FormBuilder, private afAuth: AngularFireAuth, private router: Router) { }
+  constructor(private formBuilder: FormBuilder, private afAuth: Auth, private router: Router) { }
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
 
   submit() {
     if(this.loginForm.valid) {
-      from(this.afAuth.signInWithEmailAndPassword(this.loginForm.controls.email.value, this.loginForm.controls.password.value))
+      from(signInWithEmailAndPassword(this.afAuth, this.loginForm.controls.email.value, this.loginForm.controls.password.value))
         .pipe(tap(() => this.loged = true))
         .subscribe(() => this.router.navigate(['admin']));
     }

@@ -24,20 +24,20 @@ import {PreferencesComponent} from './preferences/preferences.component';
 import {PermissionGuardService} from './permission.guard';
 import {ServiceWorkerModule} from '@angular/service-worker';
 import {environment} from '../environments/environment';
-import {OWL_DATE_TIME_LOCALE, OwlDateTimeIntl, OwlDateTimeModule, OwlNativeDateTimeModule} from '@danielmoncada/angular-datetime-picker';
 import {TernSupportModule} from '../../../tern-support/src/lib/tern-support.module';
-import {AngularFireModule} from '@angular/fire';
-import {AngularFirePerformanceModule} from '@angular/fire/performance';
-import {AngularFireAnalyticsModule, ScreenTrackingService, UserTrackingService} from '@angular/fire/analytics';
 import { InstallGuideComponent } from './install-guide/install-guide.component';
 import {DeviceDetectorService} from 'ngx-device-detector';
 import {GlobalErrorHandler} from './core/services/error/error.handler';
 import {CoreModule} from './core/core.module';
-import {AngularFirestoreModule} from '@angular/fire/firestore';
 import {APIKEY} from '../api-key';
-import {AngularFireStorageModule} from '@angular/fire/storage';
 import {LoginComponent} from './admin/login/login.component';
 import {AdminComponent} from './admin/admin/admin.component';
+import {initializeApp, provideFirebaseApp} from '@angular/fire/app';
+import {getFirestore, provideFirestore} from '@angular/fire/firestore';
+import {getStorage, provideStorage} from '@angular/fire/storage';
+import {OWL_DATE_TIME_LOCALE, OwlDateTimeIntl, OwlDateTimeModule, OwlNativeDateTimeModule} from '@danielmoncada/angular-datetime-picker';
+import {getAuth, provideAuth} from '@angular/fire/auth';
+import {MatDialogModule} from '@angular/material/dialog';
 
 @Injectable()
 export class DefaultIntl extends OwlDateTimeIntl {
@@ -79,12 +79,13 @@ registerLocaleData(localeNl);
     TernSupportModule,
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFirePerformanceModule,
-    AngularFireAnalyticsModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
     CoreModule,
-    AngularFirestoreModule,
-    AngularFireStorageModule
+    provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
+    provideAuth(() => getAuth()),
+    MatDialogModule,
+    MatSnackBarModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'nl-AW'},
@@ -93,9 +94,7 @@ registerLocaleData(localeNl);
     {provide: OwlDateTimeIntl, useClass: DefaultIntl},
     {provide: ErrorHandler, useClass: GlobalErrorHandler},
     PermissionGuardService,
-    DeviceDetectorService,
-    ScreenTrackingService,
-    UserTrackingService
+    DeviceDetectorService
   ],
   bootstrap: [
     AppComponent

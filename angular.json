@@ -22,7 +22,6 @@
             "main": "projects/kuiken-teller/src/main.ts",
             "polyfills": "projects/kuiken-teller/src/polyfills.ts",
             "tsConfig": "projects/kuiken-teller/tsconfig.app.json",
-            "aot": true,
             "assets": [
               "projects/kuiken-teller/src/favicon.ico",
               "projects/kuiken-teller/src/assets",
@@ -31,7 +30,13 @@
             "styles": [
               "projects/kuiken-teller/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -63,7 +68,8 @@
               "serviceWorker": true,
               "ngswConfigPath": "projects/kuiken-teller/ngsw-config.json"
             }
-          }
+          },
+          "defaultConfiguration": ""
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -98,19 +104,6 @@
               "projects/kuiken-teller/src/styles.scss"
             ],
             "scripts": []
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/kuiken-teller/tsconfig.app.json",
-              "projects/kuiken-teller/tsconfig.spec.json",
-              "projects/kuiken-teller/e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
           }
         },
         "e2e": {
@@ -152,18 +145,6 @@
             "tsConfig": "projects/tern-support/tsconfig.spec.json",
             "karmaConfig": "projects/tern-support/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/tern-support/tsconfig.lib.json",
-              "projects/tern-support/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     },
@@ -192,23 +173,10 @@
             "tsConfig": "projects/tern-compress-image/tsconfig.spec.json",
             "karmaConfig": "projects/tern-compress-image/karma.conf.js"
           }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/tern-compress-image/tsconfig.lib.json",
-              "projects/tern-compress-image/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
         }
       }
     }
   },
-  "defaultProject": "kuiken-teller",
   "cli": {
     "analytics": "13141720-e04d-475c-bf5d-a28f89281f24"
   }

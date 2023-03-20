@@ -1,66 +1,48 @@
 import {Injectable} from '@angular/core';
-import {AngularFireStorage} from '@angular/fire/storage';
-import {forkJoin, from, Observable, of} from 'rxjs';
+import {forkJoin, from, Observable} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 // @ts-ignore
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
-import firebase from 'firebase';
-import ListResult = firebase.storage.ListResult;
+import {getDownloadURL, listAll, ref, Storage, uploadBytes, ListResult} from '@angular/fire/storage';
+import {deleteObject} from '@firebase/storage';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ImageService {
 
-  constructor(private storage: AngularFireStorage) {
+  constructor(private storage: Storage) {
   }
 
-  public upload(url: string, fileName: string, metadata?: {}): Observable<any> {
+  public upload(url: string, fileName: string): Observable<any> {
     return this.urlToFile(url, fileName).pipe(
-      switchMap(file => new Observable<string>(observer => {
-        this.storage.upload('images/' + fileName, file, metadata).then(
-          () => {
-            const fileRef = this.storage.ref('images/' + fileName);
-            fileRef.getMetadata().subscribe();
-            fileRef.getDownloadURL()
-              .subscribe((downloadUrl) => {
-                observer.next(downloadUrl);
-                observer.complete();
-              });
-          },
-          (error) => console.log(error)
-        );
-      })));
+      switchMap(file => {
+        const storageRef = ref(this.storage, 'images/' + fileName);
+        return from(uploadBytes(storageRef, file));
+      }),
+      switchMap(uploadResult => from(getDownloadURL(uploadResult.ref))));
   }
 
   public createZipOfAllImages() {
-    const imagesDirRef = this.storage.storage.ref().child('/images');
+    const imagesDirRef = ref(this.storage, 'images/');
 
-    from(imagesDirRef.listAll())
+    from(listAll(imagesDirRef))
       .pipe(
-        switchMap(res => this.getDownloadUrls(res)),
+        switchMap(listResult => this.getDownloadUrls(listResult)),
         switchMap(urls => this.downloadImages(urls))
       ).subscribe(blobs => this.createAndSaveImagesZip(blobs));
   }
 
   public deleteAllImages(): Observable<any> {
-    const imagesDirRef = this.storage.storage.ref().child('/images');
+    const imagesDirRef = ref(this.storage, 'images/');
 
-    return from(imagesDirRef.listAll())
-      .pipe(tap(ref => ref.items.forEach(itemRef => itemRef.delete())));
-  }
-
-  public deleteImage(url: string): Observable<any> {
-    return of(this.storage.storage.refFromURL(url).delete());
-  }
-
-  public downloadImage(url: string): Observable<any> {
-    return from(this.storage.ref(url).getDownloadURL());
+    return from(listAll(imagesDirRef))
+      .pipe(tap(listResult => listResult.items.forEach(item => deleteObject(item))));
   }
 
   private getDownloadUrls(listResult: ListResult): Observable<string[]> {
-    const dUrl = listResult.items.map(itemRef => from(itemRef.getDownloadURL()));
+    const dUrl = listResult.items.map(itemRef => from(getDownloadURL(itemRef)));
     return forkJoin(dUrl);
   }
 
