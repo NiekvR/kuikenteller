@@ -58,11 +58,7 @@ export class PreferencesComponent implements OnInit {
   public save() {
     const newPreferences = this.preferencesForm.value;
     if(newPreferences.permission) {
-      const save = !!this.preferences ?
-        this.storageService.updatePreferences(this.preferences) :
-        this.storageService.updatePreferences(newPreferences);
-
-      save.subscribe(() => this.back());
+      this.storageService.updatePreferences(newPreferences).subscribe(() => this.back());
     } else {
       this.permissionError = true;
     }
