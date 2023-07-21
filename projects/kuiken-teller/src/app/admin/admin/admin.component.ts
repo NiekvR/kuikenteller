@@ -83,7 +83,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   };
 
   // @ts-ignore
-  public fields = ['uploadDate', 'sigthingDate', 'waarnemingId', 'species', 'numberOfChicks', 'observerName', 'observerEmail', 'gezinEerderGemeld', 'certaintyRecapture', 'remarks', 'lat', 'lng', 'age', 'permission', 'surface', 'shore', 'water', 'numberOfDeaths', 'causeOfDeath', 'extraFeedings'];
+  public fields = ['uploadDate', 'sigthingDate', 'id', 'species', 'numberOfChicks', 'observerName', 'observerEmail', 'gezinEerderGemeld', 'certaintyRecapture', 'remarks', 'lat', 'lng', 'age', 'permission', 'surface', 'shore', 'water', 'numberOfDeaths', 'causeOfDeath', 'extraFeedings'];
 
   public opts = { fields: this.fields }
   public subscription: Subscription;
@@ -149,7 +149,10 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   private setSightings() {
     this.subscription = this.sightingService.queryData()
-      .subscribe(sightings => this.sightings = sightings);
+      .subscribe(sightings => {
+        console.log(sightings);
+        this.sightings = sightings
+      });
   }
 
 }

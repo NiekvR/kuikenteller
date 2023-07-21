@@ -29,5 +29,6 @@ export class Sighting {
     humanActivity?: string;
     deathReasonOther?: string;
     extraFeedings?: string;
+    id?: string;
     constructor(){};
 }

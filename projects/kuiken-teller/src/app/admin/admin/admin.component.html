@@ -2,7 +2,6 @@
   <div>
     <div class="flex justify-content-space-between align-items-center header">
       <img src="assets/logo/kuikenTeller-logo_512x512.png" height="50">
-      <span>{{sightings.length}}</span>
       <div class="flex justify-content-center">
         <div class="btn animated m-r-15" (click)="signout()">
           <span>Signout</span>
@@ -47,7 +46,7 @@
         </tr>
         <tr *ngFor="let sighting of sightings">
           <td>{{sighting.uploadDate}}</td>
-          <td>{{sighting.waarnemingId}}</td>
+          <td>{{sighting.id}}</td>
           <td>{{species[sighting.species]}}</td>
           <td>{{sighting.sigthingDate | date:'yyyy-MM-dd'}}</td>
           <td>{{sighting.numberOfChicks}}</td>

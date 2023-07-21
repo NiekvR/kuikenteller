@@ -40,14 +40,11 @@ export class SightingService {
   }
 
   public getAll(): Observable<Sighting[]> {
-    return collectionData(this.collection, { idField: 'id' }) as Observable<Sighting[]>;
-    // return this.db.collection<Sighting>('sighting', query).snapshotChanges().pipe(
-    //   map(list => list.map(a => {
-    //     let item = a.payload.doc.data() as Sighting;
-    //     (item as any).waarnemingId = a.payload.doc.id;
-    //     item = this.convertSighting(item);
-    //     return item;
-    //   })));
+    return collectionData(this.collection, { idField: 'id' })
+        .pipe(map(docData => docData.map(a => {
+              a = this.convertSighting(a);
+              return a;
+            })));
   }
 
   private addSighting(sighting: Sighting): Observable<string> {
