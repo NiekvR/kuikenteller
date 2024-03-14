@@ -73,7 +73,7 @@ export class StorageService {
     this.getSightings()
       .pipe(
         map(sightings => sightings
-          .filter(sighting => new Date(sighting.sigthingDate).getTime() < new Date('2022-12-31').getTime())),
+          .filter(sighting => new Date(sighting.sigthingDate).getTime() < new Date('2023-12-31').getTime())),
         switchMap(sightings => this.deleteAllSightings(sightings)))
       .subscribe();
   }
